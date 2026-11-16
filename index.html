@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>きょうの服と天気</title>
+<meta name="theme-color" content="#E3E6E1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="服と天気">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEL0lEQVR4Xu3czW3cSBAGUGqhKDYf3zYMx2BgI1hgY1AYvjkawYDiWGAFCIMZ/nR1F8nu4Xs3H4ZqV33zkRBG8/L7432COX8YC0uEA+EgTnOgOYjTHGgO4jQHi17NZiwfv/5+PPCf3/7Z43/x4jekQ5jNxN4pEY7eFcbiVlaReOboWkUypqnyVY+Eo191yfjU8tovwtGp9u22X0E4etS+15T+EI7uZCWjPR/CwSLh6EtubTSWh3CgOYjTHB3Z457ScmcRDtxWiNMcaA7iNAeagzjN0ZGsD+k8qruycOC2Qpzm6Etd/6+rvqZw4LYyjuo3+qyWq2mOHrVs9FbjdYSjU417naaEKwhHv1ry0fLaL2OH46/v//a72/81nrBux3WvejTqn0PeDf3n24/eUpJ7wsLPAWXF4tNg4Vh/I3YSkV0P6a/sZ6xP/Mvp+RjlnCV6b47CWd85JSIDHbVQv+Gom/WtwyIy0FFDegxH+6wPi8hAR63QUThyB733jWas09bpIhy7DnqPZ9XhDlznzHAcM+LcChnxzNXOCccpI258EBnxzI2ODsfpI66IyIhnTnFQOLqab/mNZtBjZ9k9HD3Pd/1ZddyTZ9krHENMdqlChj58ovxwjDjZp5H7S+Hkz3NIxrly558cDp5JZjhyY0udxC2khSPxTDTK2kVaOHg+OeHIiipZUjaSEw6eUkI4UkJKuva9tIaj/QTsp3E7reHgiTWFozGYHKBlR/XhaPmpHKl6U/Xh4OlVhqM6jJyibl814aj7SZyrYms14eAiwuGoCCCdiO4uHA6uIxaOaPToTWiDgXCErku3yvcYCAdXUxqO8rjRv8JtFoWj8FoMpGSnReHgmrbDURIxRrS52Y1wbL6eoa3vd7s5uKy1cKiNK1jZsuZg0WI41MZ1LO16PhyScTWzG3dbIXJbURvX9Lj3xW/2EZFLmf1KoO2vfZKSJ7b+NVHbzxw/337kftNU7tWuI3duJWt9LRzu58m0yBMoD9l2c9wqidu68pPxqHF60fWVNsddRD7/qUiGUB2pWHPciSax+pR8Cc0wuqA7Nc3xGBEt0ptQhpY0NUfocSTluEzTxiQb2+JWQnN4HOnBHu+9tOZYfxzZ4+hXdjvPxKrIf+ZY4bcju9r7LbdXc8zea0i0dzKm6ZBwMKgjmoNBCQeLhAPhIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc7Do5ffHu/EwS3PgmYM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeag7j/AJ5xVfeNFFTTAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEL0lEQVR4Xu3czW3cSBAGUGqhKDYf3zYMx2BgI1hgY1AYvjkawYDiWGAFCIMZ/nR1F8nu4Xs3H4ZqV33zkRBG8/L7432COX8YC0uEA+EgTnOgOYjTHGgO4jQHi17NZiwfv/5+PPCf3/7Z43/x4jekQ5jNxN4pEY7eFcbiVlaReOboWkUypqnyVY+Eo191yfjU8tovwtGp9u22X0E4etS+15T+EI7uZCWjPR/CwSLh6EtubTSWh3CgOYjTHB3Z457ScmcRDtxWiNMcaA7iNAeagzjN0ZGsD+k8qruycOC2Qpzm6Etd/6+rvqZw4LYyjuo3+qyWq2mOHrVs9FbjdYSjU417naaEKwhHv1ry0fLaL2OH46/v//a72/81nrBux3WvejTqn0PeDf3n24/eUpJ7wsLPAWXF4tNg4Vh/I3YSkV0P6a/sZ6xP/Mvp+RjlnCV6b47CWd85JSIDHbVQv+Gom/WtwyIy0FFDegxH+6wPi8hAR63QUThyB733jWas09bpIhy7DnqPZ9XhDlznzHAcM+LcChnxzNXOCccpI258EBnxzI2ODsfpI66IyIhnTnFQOLqab/mNZtBjZ9k9HD3Pd/1ZddyTZ9krHENMdqlChj58ovxwjDjZp5H7S+Hkz3NIxrly558cDp5JZjhyY0udxC2khSPxTDTK2kVaOHg+OeHIiipZUjaSEw6eUkI4UkJKuva9tIaj/QTsp3E7reHgiTWFozGYHKBlR/XhaPmpHKl6U/Xh4OlVhqM6jJyibl814aj7SZyrYms14eAiwuGoCCCdiO4uHA6uIxaOaPToTWiDgXCErku3yvcYCAdXUxqO8rjRv8JtFoWj8FoMpGSnReHgmrbDURIxRrS52Y1wbL6eoa3vd7s5uKy1cKiNK1jZsuZg0WI41MZ1LO16PhyScTWzG3dbIXJbURvX9Lj3xW/2EZFLmf1KoO2vfZKSJ7b+NVHbzxw/337kftNU7tWuI3duJWt9LRzu58m0yBMoD9l2c9wqidu68pPxqHF60fWVNsddRD7/qUiGUB2pWHPciSax+pR8Cc0wuqA7Nc3xGBEt0ptQhpY0NUfocSTluEzTxiQb2+JWQnN4HOnBHu+9tOZYfxzZ4+hXdjvPxKrIf+ZY4bcju9r7LbdXc8zea0i0dzKm6ZBwMKgjmoNBCQeLhAPhIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc7Do5ffHu/EwS3PgmYM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeag7j/AJ5xVfeNFFTTAAAAAElFTkSuQmCC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#E3E6E1;
+  --paper:#F3F4F0;
+  --linen:#D6DBD3;
+  --ink:#1E2629;
+  --sub:#5D676A;
+  --line:#C6CCC5;
+  --indigo:#2F4A6B;
+  --indigo-pale:#DCE3EA;
+  --num:"Archivo", "Zen Kaku Gothic New", sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ground);color:var(--ink)}
+body{
+  font-family:"Zen Kaku Gothic New", system-ui, sans-serif;
+  font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
+.app{
+  max-width:460px;margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 40px);
+}
+/* top */
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.place{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.place b{font-size:22px;font-weight:700;letter-spacing:.02em;line-height:1.3}
+.place b::after{content:"";display:inline-block;width:7px;height:7px;margin-left:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-4px) rotate(45deg)}
+.place span{font-size:13px;color:var(--sub)}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--paper)}
+.iconbtn svg{width:20px;height:20px}
+
+/* weather summary */
+.wx{display:flex;align-items:center;gap:14px;margin:18px 0 14px}
+.wx .wicon{width:52px;height:52px;flex:none}
+.wx .label{font-size:15px;font-weight:500}
+.wx .temps{font-family:var(--num);font-stretch:72%;font-weight:400;font-size:34px;line-height:1;letter-spacing:-.01em}
+.wx .temps small{font-size:22px;color:var(--sub);font-weight:300}
+.wx .meta{font-size:13px;color:var(--sub);margin-top:4px;word-spacing:.4em}
+.wx .meta em{font-style:normal;font-family:var(--num);font-stretch:80%;color:var(--ink);font-weight:500}
+
+/* style switch */
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:999px;padding:4px;margin-bottom:14px}
+.seg button{padding:9px 6px;border-radius:999px;font-size:14px;font-weight:500;color:var(--sub);transition:background .2s,color .2s}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* flat lay */
+.lay{position:relative;border-radius:22px;overflow:hidden;background:var(--linen)}
+.lay svg.board{display:block;width:100%;height:auto}
+.lay .feel{
+  position:absolute;right:14px;bottom:12px;
+  background:rgba(243,244,240,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border-radius:12px;padding:6px 10px;font-size:12px;color:var(--sub);text-align:right;line-height:1.35
+}
+.lay .feel b{display:block;font-family:var(--num);font-stretch:72%;font-size:22px;color:var(--ink);font-weight:500}
+.comment{margin:12px 2px 2px;font-size:15px;font-weight:500}
+.shuffle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--indigo);padding:6px 2px;margin-top:2px}
+.shuffle svg{width:15px;height:15px}
+
+/* items */
+.items{list-style:none;margin:10px 0 0;padding:0;border-top:1px solid var(--line)}
+.items li{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.items .cat{font-size:12px;color:var(--sub)}
+.items .nm{font-size:15px;font-weight:500;line-height:1.4}
+.items .col{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--sub);white-space:nowrap}
+.items .sw{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+
+/* rain */
+.rain{margin-top:18px;background:var(--indigo-pale);border-radius:18px;padding:14px 16px;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
+.rain svg{width:26px;height:26px;color:var(--indigo)}
+.rain p+p{margin-top:4px}
+.rain h3{margin:0;font-size:15px;color:var(--indigo)}
+.rain p{margin:0;font-size:14px}
+
+section{margin-top:30px}
+h2{font-size:16px;margin:0 0 10px;font-weight:700}
+
+/* hourly */
+.hours{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin:0 -18px;padding-left:18px;padding-right:18px}
+.hours::-webkit-scrollbar{display:none}
+.hr{flex:none;width:58px;background:var(--paper);border-radius:14px;padding:8px 0 9px;text-align:center}
+.hr .t{font-size:12px;color:var(--sub)}
+.hr svg{width:26px;height:26px;margin:2px auto 0;display:block}
+.hr .d{font-family:var(--num);font-stretch:80%;font-size:17px;font-weight:500}
+.hr .p{font-size:11px;color:var(--indigo);min-height:16px}
+
+/* week */
+.week{list-style:none;margin:0;padding:0}
+.week button{
+  width:100%;display:grid;grid-template-columns:54px 30px 1fr auto;align-items:center;gap:10px;
+  padding:10px 10px;border-radius:14px;text-align:left
+}
+.week button[aria-current="true"]{background:var(--paper)}
+.week .day{font-size:14px;font-weight:500;line-height:1.25}
+.week .day small{display:block;font-size:12px;color:var(--sub);font-weight:400}
+.week .day.sat{color:#3A5A86}.week .day.sun{color:#9A4A3E}
+.week svg{width:28px;height:28px}
+.week .fit{font-size:13px;line-height:1.35}
+.week .fit small{display:block;color:var(--indigo);font-size:12px}
+.week .tt{font-family:var(--num);font-stretch:80%;font-size:16px;text-align:right;white-space:nowrap}
+.week .tt span{color:var(--sub);font-weight:300}
+
+.notice{background:var(--paper);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--sub);margin:14px 0 0}
+.foot{margin-top:34px;font-size:12px;color:var(--sub)}
+.foot a{color:var(--sub)}
+
+/* loading */
+.skeleton{height:420px;border-radius:22px;background:var(--linen);display:grid;place-items:center;color:var(--sub);font-size:14px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;visibility:hidden;background:rgba(30,38,41,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:11;max-width:460px;margin:0 auto;
+  background:var(--paper);border-radius:22px 22px 0 0;
+  padding:10px 20px calc(env(safe-area-inset-bottom) + 24px);
+  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  max-height:88vh;overflow-y:auto;visibility:hidden
+}
+.open .scrim{opacity:1;pointer-events:auto;visibility:visible}
+.open .sheet{transform:none;visibility:visible}
+.scrim,.sheet{transition-property:opacity,transform,visibility}
+.grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sheet h2{font-size:17px}
+.sheet h3{font-size:14px;margin:22px 0 8px}
+.sheet .hint{font-size:12px;color:var(--sub);margin:6px 0 0}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink)}
+.btn{padding:10px 16px;border-radius:12px;background:var(--ink);color:var(--paper);font-size:14px;font-weight:500;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.results{list-style:none;margin:8px 0 0;padding:0}
+.results button{width:100%;text-align:left;padding:10px 4px;border-bottom:1px solid var(--line);font-size:15px}
+.results small{color:var(--sub);margin-left:6px;font-size:12px}
+.loc{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.sens{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--ground);border-radius:12px;padding:4px}
+.sens button{padding:9px 0;border-radius:9px;font-size:12px;color:var(--sub);line-height:1.3}
+.sens button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.msg{font-size:13px;color:#8A3B2F;margin-top:8px;min-height:1em}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <button class="place" id="placeBtn" aria-label="地点を変更">
+      <b id="placeName">名古屋市</b>
+      <span id="dateLabel"></span>
+    </button>
+    <button class="iconbtn" id="setBtn" aria-label="設定">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    </button>
+  </header>
+
+  <div id="main"><div class="skeleton" style="margin-top:18px">天気を読み込んでいます</div></div>
+
+  <footer class="foot">
+    天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）
+  </footer>
+</div>
+
+<div id="sheetWrap">
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="grip"></div>
+    <h2 id="sheetTitle">設定</h2>
+
+    <h3>地点</h3>
+    <form class="search" id="searchForm">
+      <input id="q" type="search" placeholder="市区町村名で検索（例：栄、京都市）" autocomplete="off" enterkeyhint="search">
+      <button class="btn" type="submit">検索</button>
+    </form>
+    <ul class="results" id="results"></ul>
+    <div class="loc">
+      <button class="btn ghost" id="gpsBtn" type="button">現在地を使う</button>
+    </div>
+    <p class="msg" id="msg"></p>
+
+    <h3>体感の好み</h3>
+    <div class="sens" id="sens"></div>
+    <p class="hint">暑がりにすると薄着寄り、寒がりにすると厚着寄りの提案になります。</p>
+
+    <div style="margin-top:24px"><button class="btn" id="closeBtn" type="button" style="width:100%">閉じる</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+/* ---------- storage ---------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('mt.'+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('mt.'+k, JSON.stringify(v)); }catch(e){} }
+};
+
+const state = {
+  place: store.get('place', {name:'名古屋市', admin:'愛知県', lat:35.1815, lon:136.9066}),
+  style: store.get('style', 'kirei'),
+  sens: store.get('sens', 0),
+  dayIndex: 0,
+  shuffle: 0,
+  data: null,
+  demo: false
+};
+
+/* ---------- utils ---------- */
+const $ = s => document.querySelector(s);
+const WD = ['日','月','火','水','木','金','土'];
+function hashStr(s){ let h=2166136261; for(const ch of s){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619);} return h>>>0; }
+function rng(seed){ let a=seed>>>0; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+const pick = (r, arr) => arr[Math.floor(r()*arr.length)];
+function hexToRgb(h){ h=h.replace('#',''); return [0,2,4].map(i=>parseInt(h.substr(i,2),16)); }
+function mix(hex, amt){ // amt<0 darker, >0 lighter
+  const [r,g,b]=hexToRgb(hex); const t=amt<0?0:255; const p=Math.abs(amt);
+  const f=v=>Math.round(v+(t-v)*p).toString(16).padStart(2,'0'); return '#'+f(r)+f(g)+f(b);
+}
+function lum(hex){ const [r,g,b]=hexToRgb(hex).map(v=>v/255); return .2126*r+.7152*g+.0722*b; }
+const lc = c => lum(c) < .22 ? mix(c,.28) : mix(c,-.3);
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+
+/* ---------- colors ---------- */
+const COL = {
+  'ネイビー':'#2C3A4F','チャコール':'#3E4144','グレー':'#8C8F91','ライトグレー':'#BFC1C0','オフホワイト':'#EEEBE3',
+  'ホワイト':'#F7F7F4','エクリュ':'#E3DAC6','ベージュ':'#CDBFA5','グレージュ':'#B3AA9D','キャメル':'#AE8656',
+  'ブラウン':'#6A4E3A','ダークブラウン':'#4A3628','モカ':'#8E7461','オリーブ':'#6B6B48','カーキ':'#8A8462',
+  'ブラック':'#26272A','インディゴ':'#34486B','ライトブルー':'#B7C8D8','サックス':'#9FB6CF','ブルーグレー':'#7C8B97',
+  'ボルドー':'#5E2C33','セージ':'#9AA58E','タン':'#B99A72'
+};
+
+/* ---------- garment drawings (each returns {w,h,d}) ---------- */
+const SW = 'stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"';
+function rib(x1,x2,y1,y2,step,s){ let o=''; for(let x=x1;x<=x2;x+=step) o+=`M${x} ${y1}L${x} ${y2}`; return `<path d="${o}" stroke="${s}" stroke-opacity=".55" fill="none" ${SW}/>`; }
+const LONG = 'M56 6 Q75 20 94 6 L122 16 Q134 40 142 116 L124 120 L112 50 L112 124 L38 124 L38 50 L26 120 L8 116 Q16 40 28 16 Z';
+const G = {
+  tee(c){ const s=lc(c); return {w:120,h:108,d:
+    `<path d="M42 6 Q60 18 78 6 L102 16 L118 42 L98 52 L94 42 L94 104 L26 104 L26 42 L22 52 L2 42 L18 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M42 6 Q60 23 78 6 M26 42 L22 52 M94 42 L98 52" fill="none" stroke="${s}" ${SW}/>`}; },
+  ssshirt(c){ const s=lc(c); return {w:120,h:108,d:
+    `<path d="M42 6 L78 6 L102 16 L118 42 L98 52 L94 42 L94 104 L26 104 L26 42 L22 52 L2 42 L18 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M43 4 L60 22 L77 4 L83 14 L60 34 L37 14 Z" fill="${mix(c,.05)}" stroke="${s}" ${SW}/>
+     <path d="M60 30 L60 104 M26 42 L22 52 M94 42 L98 52" fill="none" stroke="${s}" ${SW}/>
+     <rect x="68" y="44" width="15" height="17" rx="1.5" fill="none" stroke="${s}" ${SW}/>
+     ${[48,64,80,96].map(y=>`<circle cx="60" cy="${y}" r="1.6" fill="${s}"/>`).join('')}`}; },
+  longtee(c){ const s=lc(c); return {w:150,h:128,d:
+    `<path d="${LONG}" fill="${c}" stroke="${s}" ${SW}/><path d="M56 6 Q75 25 94 6" fill="none" stroke="${s}" ${SW}/>`}; },
+  knit(c){ const s=lc(c); let tex=''; for(let x=48;x<=104;x+=8) tex+=`M${x} 30 L${x} 112`;
+    return {w:150,h:128,d:
+    `<path d="${LONG}" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="${tex}" stroke="${s}" stroke-opacity=".28" stroke-dasharray="2 3" fill="none" ${SW}/>
+     <path d="M56 6 Q75 25 94 6 M53 9 Q75 31 97 9" fill="none" stroke="${s}" ${SW}/>
+     ${rib(40,110,114,123,4,s)}
+     <path d="M38 113 L112 113 M8 106 L25 110 M125 110 L142 106" stroke="${s}" fill="none" ${SW}/>`}; },
+  cardigan(c){ const s=lc(c); return {w:150,h:128,d:
+    `<path d="${LONG}" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M56 6 L75 60 L94 6 Q75 20 56 6 Z" fill="${mix(c,-.14)}" stroke="${s}" ${SW}/>
+     <path d="M75 60 L75 124 M38 113 L112 113" stroke="${s}" fill="none" ${SW}/>
+     ${rib(40,110,114,123,4,s)}
+     ${[70,84,98,110].map(y=>`<circle cx="79" cy="${y}" r="2" fill="${mix(c,.35)}" stroke="${s}" stroke-width=".8"/>`).join('')}`}; },
+  shirt(c){ const s=lc(c); return {w:150,h:128,d:
+    `<path d="M56 6 L94 6 L122 16 Q134 40 142 116 L124 120 L112 50 L112 124 L38 124 L38 50 L26 120 L8 116 Q16 40 28 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M56 3 L75 18 L94 3 L99 13 L75 30 L51 13 Z" fill="${mix(c,.06)}" stroke="${s}" ${SW}/>
+     <path d="M75 26 L75 124 M10 104 L26 108 M124 108 L140 104" stroke="${s}" fill="none" ${SW}/>
+     <rect x="84" y="40" width="17" height="19" rx="1.5" fill="none" stroke="${s}" ${SW}/>
+     ${[38,56,74,92,110].map(y=>`<circle cx="75" cy="${y}" r="1.7" fill="${s}"/>`).join('')}`}; },
+  sweat(c){ const s=lc(c); return {w:150,h:128,d:
+    `<path d="${LONG}" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M56 6 Q75 25 94 6 M52 9 Q75 32 98 9" fill="none" stroke="${s}" ${SW}/>
+     ${rib(40,110,113,123,3,s)}${rib(10,24,107,118,3,s)}${rib(126,140,107,118,3,s)}
+     <path d="M70 16 L75 24 L80 16" fill="none" stroke="${s}" ${SW}/>`}; },
+  hoodie(c){ const s=lc(c); return {w:150,h:142,d:
+    `<g transform="translate(0,14)"><path d="${LONG}" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M52 8 Q54 -14 75 -14 Q96 -14 98 8 Q88 28 75 28 Q62 28 52 8 Z" fill="${mix(c,-.07)}" stroke="${s}" ${SW}/>
+     <path d="M66 26 L64 50 M84 26 L86 50" stroke="${s}" fill="none" stroke-width="2" stroke-linecap="round"/>
+     <path d="M48 84 L102 84 L108 112 L42 112 Z" fill="none" stroke="${s}" ${SW}/>
+     ${rib(40,110,114,123,3,s)}</g>`}; },
+  blouson(c, v){ const s=lc(c); let det='';
+    if(v==='denim'){ const st='#C9A15A'; det=`<path d="M36 34 L114 34 M45 44 L66 44 L66 62 L45 62 Z M84 44 L105 44 L105 62 L84 62 Z" fill="none" stroke="${st}" stroke-dasharray="2 2" ${SW}/>
+      ${[44,62,80,98].map(y=>`<circle cx="78" cy="${y}" r="2" fill="#B9A06A"/>`).join('')}<path d="M75 14 L75 112" stroke="${s}" ${SW}/>`; }
+    else if(v==='coach'){ det=`<path d="M75 14 L75 112" stroke="${s}" ${SW}/>${[34,54,74,94].map(y=>`<circle cx="79" cy="${y}" r="2.3" fill="${mix(c,.3)}" stroke="${s}" stroke-width=".8"/>`).join('')}`; }
+    else if(v==='boa'){ let dots=''; const r=rng(7); for(let i=0;i<90;i++){ const x=40+r()*72, y=18+r()*86; dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(1+r()*1.6).toFixed(1)}" fill="${mix(c,-.08)}"/>`; }
+      det=dots+`<path d="M75 14 L75 112" stroke="${s}" ${SW}/>`; }
+    else { det=`<path d="M75 14 L75 112" stroke="${s}" stroke-width="2.2"/><path d="M44 64 L56 86 M106 64 L94 86" stroke="${s}" fill="none" ${SW}/>`; }
+    return {w:150,h:118,d:
+    `<path d="M56 6 L94 6 L122 16 Q134 36 140 104 L124 108 L114 46 L114 112 L36 112 L36 46 L26 108 L10 104 Q16 36 28 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     ${det}
+     <path d="M53 3 L75 10 L97 3 L100 15 L75 22 L50 15 Z" fill="${v==='boa'?mix(c,-.1):mix(c,.05)}" stroke="${s}" ${SW}/>
+     ${v==='denim'?'':rib(38,112,104,111,3,s)}`}; },
+  jacket(c){ const s=lc(c); return {w:150,h:140,d:
+    `<path d="M56 6 L94 6 L122 16 Q132 40 140 128 L124 132 L114 52 L116 136 L34 136 L36 52 L26 132 L10 128 Q18 40 28 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M57 6 L75 84 L93 6 Q75 14 57 6 Z" fill="#ECEAE3" stroke="${s}" ${SW}/>
+     <path d="M56 6 L60 46 L52 50 L75 86 L98 50 L90 46 L94 6" fill="none" stroke="${s}" ${SW}/>
+     <path d="M75 86 L75 136 M42 106 L64 106 M86 106 L108 106 M86 62 L104 60" stroke="${s}" fill="none" ${SW}/>
+     <circle cx="78" cy="96" r="2.4" fill="${s}"/><circle cx="78" cy="116" r="2.4" fill="${s}"/>`}; },
+  coat(c, v){ const s=lc(c); const chester = v==='chester';
+    return {w:160,h:206,d:
+    `<path d="M58 6 L102 6 L130 18 Q142 60 150 176 L134 180 L122 70 L128 202 L32 202 L38 70 L26 180 L10 176 Q18 60 30 18 Z" fill="${c}" stroke="${s}" ${SW}/>
+     ${chester
+       ? `<path d="M59 6 L80 86 L101 6 Q80 14 59 6 Z" fill="#ECEAE3" stroke="${s}" ${SW}/><path d="M58 6 L62 50 L53 54 L80 88 L107 54 L98 50 L102 6" fill="none" stroke="${s}" ${SW}/><circle cx="84" cy="100" r="2.6" fill="${s}"/><circle cx="84" cy="122" r="2.6" fill="${s}"/>`
+       : `<path d="M57 5 L80 40 L103 5 L109 18 L80 54 L51 18 Z" fill="${mix(c,.04)}" stroke="${s}" ${SW}/>`}
+     <path d="M80 ${chester?88:50} L80 202 M44 122 L52 150 M116 122 L108 150" stroke="${s}" fill="none" ${SW}/>`}; },
+  down(c){ const s=lc(c); let q=''; for(const y of [34,54,74,94,114]) q+=`M38 ${y} Q80 ${y+6} 122 ${y}`;
+    for(const y of [40,64,88]) q+=`M${14+ (y-40)/12} ${y+20} L${30} ${y+16} M${146-(y-40)/12} ${y+20} L${130} ${y+16}`;
+    return {w:160,h:130,d:
+    `<path d="M54 8 L106 8 L132 20 Q146 44 152 112 L134 118 L122 54 L124 124 L36 124 L38 54 L26 118 L8 112 Q14 44 28 20 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="${q}" stroke="${s}" stroke-opacity=".7" fill="none" ${SW}/>
+     <rect x="54" y="0" width="52" height="13" rx="4" fill="${mix(c,-.05)}" stroke="${s}" ${SW}/>
+     <path d="M80 0 L80 124" stroke="${s}" stroke-width="2"/>`}; },
+  parka(c){ const s=lc(c); return {w:150,h:140,d:
+    `<path d="M56 6 L94 6 L122 16 Q134 40 140 126 L124 130 L114 50 L116 136 L34 136 L36 50 L26 130 L10 126 Q16 40 28 16 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M48 2 Q75 -6 102 2 L100 16 Q75 9 50 16 Z" fill="${mix(c,-.08)}" stroke="${s}" ${SW}/>
+     <rect x="71" y="14" width="8" height="122" fill="${mix(c,-.05)}" stroke="${s}" ${SW}/>
+     <rect x="40" y="84" width="27" height="26" rx="2" fill="none" stroke="${s}" ${SW}/><path d="M40 92 L67 92" stroke="${s}" ${SW}/>
+     <rect x="83" y="84" width="27" height="26" rx="2" fill="none" stroke="${s}" ${SW}/><path d="M83 92 L110 92" stroke="${s}" ${SW}/>
+     <path d="M86 40 L106 40 M86 46 L106 46" stroke="${s}" ${SW}/>`}; },
+  wide(c, v){ const s=lc(c); return {w:110,h:196,d:
+    `<path d="M16 4 L94 4 L106 192 L62 192 L55 62 L48 192 L4 192 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M16 15 L94 15 M55 15 L55 56 M18 15 L28 42 M92 15 L82 42" stroke="${s}" fill="none" ${SW}/>
+     <path d="M31 22 L26 188 M79 22 L84 188" stroke="${s}" stroke-opacity=".35" fill="none" ${SW}/>
+     ${v==='easy'?`${rib(18,92,5,14,3,s)}<path d="M52 15 Q48 30 44 36 M58 15 Q62 30 66 36" stroke="${mix(c,.35)}" stroke-width="1.6" fill="none"/>`:''}
+     ${v==='cord'?`<path d="${Array.from({length:12},(_,i)=>`M${12+i*7.5} 24 L${8+i*8.2} 186`).join('')}" stroke="${s}" stroke-opacity=".18" fill="none"/>`:''}`}; },
+  tapered(c){ const s=lc(c); return {w:110,h:196,d:
+    `<path d="M20 4 L90 4 L86 192 L60 192 L55 62 L50 192 L24 192 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M20 15 L90 15 M55 15 L55 56 M22 15 L31 40 M88 15 L79 40" stroke="${s}" fill="none" ${SW}/>
+     <path d="M35 22 L37 188 M75 22 L73 188" stroke="${s}" stroke-opacity=".35" fill="none" ${SW}/>`}; },
+  denim(c){ const s=lc(c); const st='#C9A15A'; return {w:110,h:196,d:
+    `<path d="M18 4 L92 4 L90 192 L60 192 L55 62 L50 192 L20 192 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M18 15 L92 15 M55 15 L55 58" stroke="${s}" fill="none" ${SW}/>
+     <path d="M20 16 Q32 36 42 16 M90 16 Q78 36 68 16 M74 22 L84 22 L84 30 M22 184 L50 184 M60 184 L88 184 M55 18 L55 56" stroke="${st}" stroke-dasharray="2 2" fill="none" ${SW}/>
+     <circle cx="55" cy="10" r="2.2" fill="#B9A06A"/>`}; },
+  shorts(c){ const s=lc(c); return {w:110,h:90,d:
+    `<path d="M14 4 L96 4 L104 86 L60 86 L55 44 L50 86 L6 86 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M14 15 L96 15 M55 15 L55 40 M16 15 L26 38 M94 15 L84 38 M8 78 L50 78 M60 78 L102 78" stroke="${s}" fill="none" ${SW}/>`}; },
+  // shoes: pair
+  sneaker(c, v){ const s=lc(c); const sole = v==='dark' ? '#2B2C2E' : '#F2F1EC';
+    const one = `<path d="M2 40 Q2 18 22 16 L36 10 Q52 22 66 32 Q74 38 72 44 L2 44 Z" fill="${c}" stroke="${s}" ${SW}/>
+      <rect x="0" y="43" width="74" height="9" rx="3.5" fill="${sole}" stroke="${lc(sole)}" ${SW}/>
+      <path d="M32 15 L42 25 M37 12 L48 22 M42 10 L53 20 M2 30 L14 30" stroke="${s}" fill="none" ${SW}/>`;
+    return {w:160,h:72,d:`<g>${one}</g><g transform="translate(84,16)">${one}</g>`}; },
+  loafer(c){ const s=lc(c); const one = `<path d="M2 38 Q4 22 20 22 L42 20 Q62 25 70 33 Q75 38 72 42 L2 42 Z" fill="${c}" stroke="${s}" ${SW}/>
+      <rect x="0" y="41" width="74" height="6" rx="2" fill="#2A2422"/>
+      <path d="M36 21 Q44 30 56 24 M40 26 L52 25" stroke="${s}" fill="none" ${SW}/>`;
+    return {w:160,h:68,d:`<g>${one}</g><g transform="translate(84,16)">${one}</g>`}; },
+  boot(c){ const s=lc(c); const one = `<path d="M4 46 L4 4 L28 4 L30 26 Q56 30 68 38 Q74 42 72 48 L4 48 Z" fill="${c}" stroke="${s}" ${SW}/>
+      <path d="M8 4 Q15 22 22 4 Z" fill="${mix(c,-.2)}" stroke="${s}" ${SW}/>
+      <rect x="1" y="47" width="74" height="8" rx="2" fill="#26272A"/>`;
+    return {w:160,h:72,d:`<g>${one}</g><g transform="translate(84,16)">${one}</g>`}; },
+  sandal(c){ const one = `<rect x="0" y="38" width="72" height="9" rx="4.5" fill="#CDB89A" stroke="#9C8668" ${SW}/>
+      <path d="M12 39 Q20 20 34 39 M40 39 Q50 22 62 39" stroke="${c}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+    return {w:160,h:64,d:`<g>${one}</g><g transform="translate(84,14)">${one}</g>`}; },
+  // extras
+  umbrella(c){ const s=lc(c); return {w:34,h:176,d:
+    `<path d="M17 6 L29 126 Q17 133 5 126 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M17 10 L13 126 M17 10 L22 126" stroke="${s}" stroke-opacity=".6" fill="none" ${SW}/>
+     <path d="M17 0 L17 6 M17 130 L17 158" stroke="#6E6A64" stroke-width="2.4"/>
+     <path d="M17 156 Q18 174 8 172 Q2 170 4 162" stroke="#6A4E3A" stroke-width="4.5" fill="none" stroke-linecap="round"/>`}; },
+  fold(c){ const s=lc(c); return {w:34,h:100,d:
+    `<rect x="5" y="16" width="24" height="80" rx="9" fill="${c}" stroke="${s}" ${SW}/>
+     <rect x="10" y="2" width="14" height="18" rx="4" fill="#2B2C2E"/><path d="M5 40 L29 40" stroke="${s}" ${SW}/>`}; },
+  scarf(c){ const s=lc(c); let f=''; for(let x=9;x<=43;x+=4) f+=`M${x} 150 L${x} 160`;
+    return {w:52,h:162,d:
+    `<rect x="6" y="0" width="40" height="150" rx="3" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M6 30 L46 30 M6 36 L46 36 M6 114 L46 114 M6 120 L46 120" stroke="${mix(c,.3)}" stroke-width="2"/>
+     <path d="${f}" stroke="${c}" stroke-width="2"/>`}; },
+  beanie(c){ const s=lc(c); return {w:90,h:66,d:
+    `<path d="M8 40 Q8 4 45 4 Q82 4 82 40 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <rect x="3" y="36" width="84" height="26" rx="5" fill="${mix(c,-.06)}" stroke="${s}" ${SW}/>${rib(9,81,40,58,4,s)}`}; },
+  cap(c){ const s=lc(c); return {w:104,h:58,d:
+    `<path d="M8 42 Q10 6 50 6 Q90 6 92 42 Z" fill="${c}" stroke="${s}" ${SW}/>
+     <path d="M62 42 Q92 38 104 50 Q82 56 60 50 Z" fill="${mix(c,-.08)}" stroke="${s}" ${SW}/>
+     <path d="M50 6 L50 42 M30 10 Q36 26 34 42 M70 10 Q64 26 66 42" stroke="${s}" stroke-opacity=".5" fill="none" ${SW}/><circle cx="50" cy="6" r="3" fill="${c}" stroke="${s}"/>`}; },
+  tote(c){ const s=lc(c); return {w:96,h:118,d:
+    `<path d="M28 32 Q28 4 48 4 Q68 4 68 32" stroke="${mix(c,-.15)}" stroke-width="5" fill="none"/>
+     <rect x="4" y="28" width="88" height="88" rx="2" fill="${c}" stroke="${s}" ${SW}/>`}; }
+};
+
+/* ---------- outfit catalog ----------
+   level 0: >=28  1: 25-28  2: 21-25  3: 18-21  4: 15-18  5: 12-15  6: 9-12  7: 5-9  8: <5   */
+const I = (name, shape, colors, v) => ({name, shape, colors, v});
+const KIREI = {
+  outer: [
+    [], [], [],
+    [I('コットンカーディガン','cardigan',['ネイビー','グレージュ','エクリュ']), I('シャツジャケット','blouson',['ベージュ','オリーブ','グレー'],'coach')],
+    [I('テーラードジャケット','jacket',['ネイビー','チャコール','グレージュ']), I('ドリズラーブルゾン','blouson',['ベージュ','ネイビー','グレー'])],
+    [I('コットンのステンカラーコート','coat',['ベージュ','ネイビー','グレージュ']), I('ウールブルゾン','blouson',['チャコール','ネイビー','モカ'])],
+    [I('ステンカラーコート','coat',['ネイビー','キャメル','チャコール']), I('ウールのテーラードジャケット','jacket',['グレー','ブラウン','チャコール'])],
+    [I('ウールのチェスターコート','coat',['キャメル','チャコール','ネイビー'],'chester'), I('ウールのバルカラーコート','coat',['グレー','ブラウン','ネイビー'])],
+    [I('ダウンジャケット','down',['ブラック','ネイビー','ダークブラウン']), I('厚手ウールのバルカラーコート','coat',['チャコール','キャメル'])]
+  ],
+  top: [
+    [I('リネンの半袖シャツ','ssshirt',['ホワイト','エクリュ','サックス']), I('上質コットンのT','tee',['ホワイト','グレー','ネイビー'])],
+    [I('半袖オープンカラーシャツ','ssshirt',['エクリュ','ネイビー','セージ']), I('ヘビーウェイトT','tee',['オフホワイト','ブラック','ベージュ'])],
+    [I('ブロードシャツ','shirt',['ホワイト','サックス','エクリュ']), I('長袖T','longtee',['オフホワイト','グレー','ネイビー'])],
+    [I('ブロードシャツ','shirt',['ホワイト','サックス']), I('長袖T','longtee',['オフホワイト','ライトグレー'])],
+    [I('オックスフォードシャツ','shirt',['ホワイト','サックス','エクリュ']), I('ハイゲージニット','knit',['ネイビー','グレー','エクリュ'])],
+    [I('クルーネックニット','knit',['グレー','ネイビー','エクリュ','ブラウン']), I('ブロードシャツ','shirt',['ホワイト','サックス'])],
+    [I('クルーネックニット','knit',['エクリュ','グレー','ブラウン','ボルドー']), I('ミドルゲージのカーディガン','cardigan',['グレー','モカ','ネイビー'])],
+    [I('ローゲージニット','knit',['エクリュ','グレー','ブラウン','オリーブ'])],
+    [I('ローゲージニット','knit',['エクリュ','チャコール','ブラウン']), I('タートルネックニット','knit',['ブラック','グレー','エクリュ'])]
+  ],
+  inner: [[],[],[],[],[],[],
+    [I('長袖T','longtee',['ホワイト','グレー']), I('ブロードシャツ','shirt',['ホワイト','サックス'])],
+    [I('ブロードシャツ','shirt',['ホワイト','サックス']), I('保温インナー','longtee',['ライトグレー'])],
+    [I('保温インナー','longtee',['ライトグレー','ブラック'])]],
+  bottom: [
+    [I('リネンのイージーパンツ','wide',['ベージュ','ネイビー','エクリュ'],'easy'), I('ワイドショーツ','shorts',['ベージュ','ネイビー','オリーブ'])],
+    [I('ワイドスラックス','wide',['ベージュ','グレー','ネイビー']), I('コットンのイージーパンツ','wide',['オリーブ','エクリュ'],'easy')],
+    [I('ワイドスラックス','wide',['グレー','ネイビー','ベージュ']), I('チノトラウザー','tapered',['ベージュ','オリーブ','ネイビー'])],
+    [I('ワイドスラックス','wide',['チャコール','グレー','ベージュ']), I('ストレートデニム','denim',['インディゴ'])],
+    [I('ワイドスラックス','wide',['グレー','ネイビー','ブラウン']), I('ストレートデニム','denim',['インディゴ']), I('チノトラウザー','tapered',['ベージュ','オリーブ'])],
+    [I('ウールスラックス','tapered',['グレー','チャコール','ブラウン']), I('ストレートデニム','denim',['インディゴ'])],
+    [I('ウールスラックス','tapered',['グレー','チャコール','ネイビー']), I('ワイドスラックス','wide',['ブラウン','チャコール'])],
+    [I('ウールスラックス','tapered',['チャコール','グレー']), I('ストレートデニム','denim',['インディゴ'])],
+    [I('厚手ウールのスラックス','tapered',['チャコール','グレー','ブラウン']), I('ストレートデニム','denim',['インディゴ'])]
+  ],
+  shoes: [
+    [I('レザーサンダル','sandal',['ダークブラウン','ブラック']), I('ローファー（素足ばき）','loafer',['ダークブラウン','ブラック'])],
+    [I('ローファー','loafer',['ダークブラウン','ブラック']), I('レザースニーカー','sneaker',['ホワイト'])],
+    [I('ローファー','loafer',['ダークブラウン','ブラック']), I('レザースニーカー','sneaker',['ホワイト'])],
+    [I('ローファー','loafer',['ダークブラウン','ブラック']), I('レザースニーカー','sneaker',['ホワイト','グレー'])],
+    [I('ローファー','loafer',['ダークブラウン','ブラック']), I('スエードスニーカー','sneaker',['グレー','ベージュ'])],
+    [I('ローファー','loafer',['ダークブラウン','ブラック']), I('サイドゴアブーツ','boot',['ダークブラウン','ブラック'])],
+    [I('サイドゴアブーツ','boot',['ダークブラウン','ブラック']), I('ローファー','loafer',['ダークブラウン','ブラック'])],
+    [I('サイドゴアブーツ','boot',['ダークブラウン','ブラック']), I('スエードスニーカー','sneaker',['グレー','ブラウン'])],
+    [I('サイドゴアブーツ','boot',['ブラック','ダークブラウン'])]
+  ],
+  extra: [[I('キャンバストート','tote',['エクリュ','ベージュ'])],[],[],[],[],[],[],
+    [I('ウールマフラー','scarf',['グレー','キャメル','ネイビー'])],
+    [I('ウールマフラー','scarf',['グレー','キャメル','ボルドー']), I('ニットキャップ','beanie',['チャコール','グレー'])]]
+};
+const CASUAL = {
+  outer: [
+    [], [], [],
+    [I('コーチジャケット','blouson',['ブラック','ネイビー','オリーブ'],'coach'), I('デニムジャケット','blouson',['インディゴ'],'denim')],
+    [I('デニムジャケット','blouson',['インディゴ'],'denim'), I('マウンテンパーカー','parka',['ベージュ','オリーブ','ネイビー'])],
+    [I('マウンテンパーカー','parka',['ベージュ','オリーブ','ブラック']), I('ワークジャケット','blouson',['ブラウン','カーキ','ネイビー'])],
+    [I('ボアブルゾン','blouson',['エクリュ','ブラウン','チャコール'],'boa'), I('中綿ジャケット','down',['オリーブ','ブラック','ネイビー'])],
+    [I('中綿ジャケット','down',['オリーブ','ブラック','ネイビー']), I('ボアブルゾン','blouson',['エクリュ','ブラウン'],'boa')],
+    [I('ダウンジャケット','down',['ブラック','オリーブ','ネイビー'])]
+  ],
+  top: [
+    [I('ポケットT','tee',['ホワイト','ネイビー','グレー']), I('オーバーサイズT','tee',['ブラック','オフホワイト','セージ'])],
+    [I('ヘビーウェイトT','tee',['オフホワイト','ブラック','オリーブ']), I('半袖チェックシャツ','ssshirt',['ブルーグレー','ベージュ'])],
+    [I('ロングスリーブT','longtee',['オフホワイト','グレー','ネイビー']), I('オックスフォードシャツ','shirt',['サックス','ホワイト'])],
+    [I('ロングスリーブT','longtee',['オフホワイト','グレー','ブラック']), I('スウェット','sweat',['グレー','ネイビー'])],
+    [I('スウェット','sweat',['グレー','ネイビー','エクリュ']), I('ロングスリーブT','longtee',['オフホワイト','ブラック'])],
+    [I('スウェット','sweat',['グレー','エクリュ','ネイビー']), I('パーカー','hoodie',['グレー','ネイビー','ブラック'])],
+    [I('パーカー','hoodie',['グレー','ネイビー','オリーブ']), I('スウェット','sweat',['グレー','ネイビー'])],
+    [I('パーカー','hoodie',['グレー','ネイビー','ブラック']), I('クルーネックニット','knit',['エクリュ','ブラウン'])],
+    [I('厚手パーカー','hoodie',['グレー','ブラック','ネイビー']), I('ローゲージニット','knit',['エクリュ','ブラウン'])]
+  ],
+  inner: [[],[],[],[],[],[],
+    [I('ロングスリーブT','longtee',['ホワイト','グレー'])],
+    [I('サーマルT','longtee',['オフホワイト','グレー'])],
+    [I('サーマルT','longtee',['オフホワイト','グレー'])]],
+  bottom: [
+    [I('ショーツ','shorts',['ベージュ','オリーブ','ブラック']), I('ナイロンショーツ','shorts',['ブラック','ネイビー'])],
+    [I('ワイドチノ','wide',['ベージュ','オリーブ','ブラック']), I('ショーツ','shorts',['ベージュ','グレー'])],
+    [I('ストレートデニム','denim',['インディゴ']), I('ワイドチノ','wide',['ベージュ','オリーブ'])],
+    [I('ストレートデニム','denim',['インディゴ']), I('ワイドチノ','wide',['ベージュ','ブラック','オリーブ'])],
+    [I('ストレートデニム','denim',['インディゴ']), I('ワイドチノ','wide',['ベージュ','オリーブ']), I('ファティーグパンツ','wide',['オリーブ','カーキ'])],
+    [I('ストレートデニム','denim',['インディゴ']), I('コーデュロイパンツ','wide',['ブラウン','ベージュ','ブラック'],'cord')],
+    [I('コーデュロイパンツ','wide',['ブラウン','ベージュ','ネイビー'],'cord'), I('ストレートデニム','denim',['インディゴ'])],
+    [I('ストレートデニム','denim',['インディゴ']), I('コーデュロイパンツ','wide',['ブラウン','チャコール'],'cord')],
+    [I('ストレートデニム','denim',['インディゴ']), I('コーデュロイパンツ','wide',['ブラウン','ブラック'],'cord')]
+  ],
+  shoes: [
+    [I('スポーツサンダル','sandal',['ブラック','オリーブ']), I('キャンバススニーカー','sneaker',['ホワイト','ブラック'])],
+    [I('キャンバススニーカー','sneaker',['ホワイト','ブラック']), I('スニーカー','sneaker',['グレー','ホワイト'])],
+    [I('スニーカー','sneaker',['グレー','ホワイト','ネイビー'])],
+    [I('スニーカー','sneaker',['グレー','ホワイト','ネイビー']), I('キャンバススニーカー','sneaker',['ホワイト','ブラック'])],
+    [I('スニーカー','sneaker',['グレー','ネイビー','ブラック'])],
+    [I('スニーカー','sneaker',['グレー','ブラック']), I('ワークブーツ','boot',['ブラウン','ブラック'])],
+    [I('ワークブーツ','boot',['ブラウン','ブラック']), I('スニーカー','sneaker',['グレー','ブラック'])],
+    [I('ワークブーツ','boot',['ブラウン','ブラック']), I('スニーカー','sneaker',['ブラック'])],
+    [I('ワークブーツ','boot',['ブラウン','ブラック'])]
+  ],
+  extra: [[I('キャップ','cap',['ネイビー','ベージュ','ブラック'])],[I('キャップ','cap',['ネイビー','ベージュ'])],[],[],[],[],[],
+    [I('ニットキャップ','beanie',['チャコール','オリーブ','ブラウン'])],
+    [I('ニットキャップ','beanie',['チャコール','オリーブ']), I('マフラー','scarf',['グレー','ネイビー'])]]
+};
+const RAIN = {
+  kirei: {
+    shoes: [I('ラバーソールのサイドゴアブーツ','boot',['ブラック','ダークブラウン']), I('撥水加工のレザースニーカー','sneaker',['ブラック'],'dark')],
+    outer: I('撥水ステンカラーコート','coat',['ネイビー','ベージュ','チャコール'])
+  },
+  casual: {
+    shoes: [I('防水スニーカー','sneaker',['ブラック','グレー'],'dark'), I('ショート丈のレインブーツ','boot',['ブラック','オリーブ'])],
+    outer: I('マウンテンパーカー','parka',['ベージュ','オリーブ','ネイビー','ブラック'])
+  }
+};
+const SNOW_SHOES = { kirei: I('防滑ソールのサイドゴアブーツ','boot',['ブラック','ダークブラウン']), casual: I('防水ブーツ','boot',['ブラック','ブラウン']) };
+const UMB_COL = ['ネイビー','ブラック','チャコール','オリーブ','ベージュ'];
+
+const LEVEL_TEXT = [
+  '真夏日。風が抜ける素材で、汗じみが目立たない色を。',
+  '半袖で過ごせる暑さ。冷房が強い場所に行くなら薄手の羽織りを。',
+  '長袖1枚がちょうどいい気温。',
+  '長袖に軽い羽織りがあると安心。',
+  'ジャケットやブルゾンの出番。',
+  '薄手のコートやブルゾンに、ニットかスウェットを。',
+  '厚手のトップスに、しっかりめのアウターを重ねて。',
+  '冬のアウターに、首元か頭の小物を足して。',
+  '真冬の寒さ。ダウンと小物で首元と頭を守って。'
+];
+
+function levelOf(t){
+  const th=[28,25,21,18,15,12,9,5];
+  for(let i=0;i<th.length;i++) if(t>=th[i]) return i;
+  return 8;
+}
+
+/* ---------- weather codes ---------- */
+function wxInfo(code){
+  if(code===0) return {t:'快晴',k:'sun'};
+  if(code===1) return {t:'晴れ',k:'sun'};
+  if(code===2) return {t:'晴れ時々くもり',k:'partly'};
+  if(code===3) return {t:'くもり',k:'cloud'};
+  if(code===45||code===48) return {t:'霧',k:'fog'};
+  if(code>=51&&code<=57) return {t:'霧雨',k:'rain'};
+  if(code===61) return {t:'弱い雨',k:'rain'};
+  if(code===63) return {t:'雨',k:'rain'};
+  if(code===65) return {t:'強い雨',k:'rain'};
+  if(code===66||code===67) return {t:'みぞれ',k:'rain'};
+  if(code>=71&&code<=77) return {t:'雪',k:'snow'};
+  if(code>=80&&code<=82) return {t:'にわか雨',k:'rain'};
+  if(code===85||code===86) return {t:'にわか雪',k:'snow'};
+  if(code>=95) return {t:'雷雨',k:'storm'};
+  return {t:'—',k:'cloud'};
+}
+function wxIcon(k){
+  const ink='#1E2629', ind='#2F4A6B', sun='#C9A15A';
+  const cloud = (dx=0,dy=0,f='#F3F4F0') => `<path transform="translate(${dx},${dy})" d="M14 34 Q6 34 6 27 Q6 20 14 20 Q16 12 25 12 Q34 12 36 20 Q44 20 44 27 Q44 34 36 34 Z" fill="${f}" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/>`;
+  const sunG = (cx,cy,r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${sun}"/>` + Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${(cx+Math.cos(a)*(r+3)).toFixed(1)} ${(cy+Math.sin(a)*(r+3)).toFixed(1)}L${(cx+Math.cos(a)*(r+7)).toFixed(1)} ${(cy+Math.sin(a)*(r+7)).toFixed(1)}" stroke="${sun}" stroke-width="2.2" stroke-linecap="round"/>`}).join('');
+  let b='';
+  if(k==='sun') b=sunG(25,25,9);
+  else if(k==='partly') b=sunG(18,17,7)+cloud(4,6);
+  else if(k==='cloud') b=cloud(0,2);
+  else if(k==='fog') b=cloud(0,-4)+`<path d="M8 38 L42 38 M12 44 L38 44" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`;
+  else if(k==='rain') b=cloud(0,-4)+`<path d="M16 36 L13 44 M26 36 L23 44 M36 36 L33 44" stroke="${ind}" stroke-width="2.4" stroke-linecap="round"/>`;
+  else if(k==='snow') b=cloud(0,-4)+[16,26,36].map(x=>`<circle cx="${x}" cy="41" r="2.4" fill="${ind}"/>`).join('');
+  else if(k==='storm') b=cloud(0,-4)+`<path d="M26 34 L20 42 L27 42 L22 50" stroke="${sun}" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 50 50" aria-hidden="true">${b}</svg>`;
+}
+
+/* ---------- outfit engine ---------- */
+function buildOutfit(day, style, sens, seed){
+  const r = rng(hashStr(`${day.date}|${style}|${seed}`));
+  const eff = day.appMin*0.4 + day.appMax*0.6 + sens;
+  let lv = levelOf(eff);
+  const cat = style==='kirei' ? KIREI : CASUAL;
+  const snow = day.snow;
+  const rainy = day.pop>=50 || day.psum>=1 || day.kind==='rain' || day.kind==='storm';
+  const heavy = day.pop>=70 || day.psum>=5;
+  const used = new Set();
+  const choose = (list) => {
+    if(!list || !list.length) return null;
+    const it = pick(r, list);
+    const avail = it.colors.filter(c=>!used.has(c));
+    const cn = pick(r, avail.length?avail:it.colors);
+    used.add(cn);
+    return {...it, colorName:cn, color:COL[cn]};
+  };
+  const o = {};
+  // outer
+  if(rainy && lv>=3 && lv<=6 && r()<0.75) o.outer = choose([RAIN[style].outer]);
+  else o.outer = choose(cat.outer[lv]);
+  o.top = choose(cat.top[lv]);
+  // avoid shirt+shirt / knit+knit duplicate in inner
+  let inners = (cat.inner[lv]||[]).filter(x=>x.shape!==o.top.shape);
+  o.inner = inners.length ? choose(inners) : null;
+  let bottoms = cat.bottom[lv];
+  if(heavy){ const f=bottoms.filter(b=>b.shape!=='wide'); if(f.length) bottoms=f; }
+  o.bottom = choose(bottoms);
+  if(snow) o.shoes = choose([SNOW_SHOES[style]]);
+  else if(rainy) o.shoes = choose(RAIN[style].shoes);
+  else o.shoes = choose(cat.shoes[lv]);
+  o.extras = [];
+  // umbrella
+  let umb = null;
+  if(day.pop>=60 || day.psum>=3 || snow) umb = 'long';
+  else if(day.pop>=30 || day.psum>=0.5) umb = 'fold';
+  if(umb){
+    const cn = pick(r, UMB_COL);
+    o.extras.push({name: umb==='long'?'長傘':'折りたたみ傘', shape: umb==='long'?'umbrella':'fold', colorName:cn, color:COL[cn]});
+  }
+  const ex = (cat.extra[lv]||[]).filter(e => !(rainy && e.shape==='tote'));
+  for(const e of ex){ if(o.extras.length>=2) break; o.extras.push(choose([e])); }
+  // texts
+  const notes = [];
+  if(day.max - day.min >= 9) notes.push(`朝晩と日中で${Math.round(day.max-day.min)}℃差。脱ぎ着しやすい重ね方に。`);
+  let rain = null;
+  if(umb || rainy || snow){
+    const lines = [];
+    if(umb==='long') lines.push(`傘：降水確率${day.pop}%なので長傘を。` + (day.wind>=8 ? '風が強いので骨の丈夫なものを。' : ''));
+    else if(umb==='fold') lines.push(`傘：降水確率${day.pop}%。折りたたみ傘をかばんに。`);
+    if(snow) lines.push(`靴：雪で滑りやすいので、溝の深いソールのブーツを。`);
+    else if(rainy) lines.push(`靴：${o.shoes.name}で。スエードや革底の靴は避けると安心。`);
+    if(heavy) lines.push('パンツ：裾が広いと濡れやすいので、細身かくるぶし丈を選びました。');
+    rain = {title: snow ? '雪の日の足元' : '雨の日の傘と靴', lines};
+  }
+  return {lv, eff, outfit:o, notes, rain, rainy};
+}
+
+/* ---------- flat-lay renderer ---------- */
+function place(item, slot, jitter){
+  const g = G[item.shape](item.color, item.v);
+  let w=g.w, h=g.h, rot=jitter;
+  const tall = h/w > 2.2, slotWide = slot.w/slot.h > 1.4;
+  if(tall && slotWide){ [w,h]=[h,w]; rot += -90; }
+  const sc = Math.min(slot.w/w, slot.h/h) * 0.92;
+  const cx = slot.x + slot.w/2, cy = slot.y + slot.h/2;
+  return `<g filter="url(#sh)" transform="translate(${cx.toFixed(1)},${cy.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(${sc.toFixed(3)}) translate(${(-g.w/2).toFixed(1)},${(-g.h/2).toFixed(1)})">${g.d}</g>`;
+}
+function renderLay(res, seed){
+  const o = res.outfit; const r = rng(seed);
+  const j = () => (r()-0.5)*7;
+  let slots;
+  if(o.outer){
+    slots = { outer:{x:8,y:10,w:196,h:252}, top:{x:206,y:10,w:146,h:140}, bottom:{x:214,y:154,w:132,h:258},
+              extra:{x:14,y:266,w:190,h:56}, shoes:{x:14,y:324,w:190,h:88} };
+  } else {
+    slots = { top:{x:10,y:16,w:196,h:200}, bottom:{x:214,y:12,w:132,h:262},
+              shoes:{x:14,y:300,w:192,h:100}, extra:{x:222,y:286,w:126,h:124} };
+  }
+  if(o.outer && !o.extras.filter(Boolean).length) slots.shoes = {x:14,y:282,w:190,h:124};
+  let body = '';
+  if(o.outer) body += place(o.outer, slots.outer, j());
+  body += place(o.top, slots.top, j());
+  body += place(o.bottom, slots.bottom, j()*0.5);
+  body += place(o.shoes, slots.shoes, j()*0.5);
+  const ex = o.extras.filter(Boolean).sort((p,q)=>{ const a=G[p.shape](p.color), b=G[q.shape](q.color); return (b.h/b.w)-(a.h/a.w); });
+  if(ex.length===1){
+    const e=ex[0]; const s = {...slots.extra};
+    if(!o.outer && G[e.shape](e.color).h < 90){ s.y += 20; s.h -= 40; }
+    body += place(e, s, j());
+  } else if(ex.length===2){
+    const s=slots.extra;
+    const wide = s.w > s.h;
+    const a = wide ? {x:s.x,y:s.y,w:s.w*0.62,h:s.h} : {x:s.x,y:s.y,w:s.w/2,h:s.h};
+    const b = wide ? {x:s.x+s.w*0.62,y:s.y,w:s.w*0.38,h:s.h} : {x:s.x+s.w/2,y:s.y,w:s.w/2,h:s.h};
+    body += place(ex[0], a, j()) + place(ex[1], b, j());
+  }
+  // linen texture
+  let tex=''; const rr=rng(11);
+  for(let i=0;i<70;i++){ const y=(rr()*420).toFixed(0); tex+=`M0 ${y}L360 ${y}`; }
+  return `<svg class="board" viewBox="0 0 360 420" role="img" aria-label="きょうのコーデのイラスト">
+    <defs><filter id="sh" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#1E2629" flood-opacity=".16"/></filter></defs>
+    <rect width="360" height="420" fill="#D6DBD3"/>
+    <path d="${tex}" stroke="#C9CFC6" stroke-width=".6" opacity=".7"/>
+    ${body}
+  </svg>`;
+}
+
+/* ---------- data ---------- */
+async function fetchWeather(lat, lon){
+  const u = new URL('https://api.open-meteo.com/v1/forecast');
+  u.search = new URLSearchParams({
+    latitude:lat, longitude:lon, timezone:'Asia/Tokyo', forecast_days:'7', wind_speed_unit:'ms',
+    daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
+    hourly:'temperature_2m,precipitation_probability,weather_code'
+  });
+  const res = await fetch(u, {cache:'no-store'});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return normalize(await res.json());
+}
+function normalize(j){
+  const d=j.daily, h=j.hourly;
+  const days = d.time.map((t,i)=>{
+    const k = wxInfo(d.weather_code[i]);
+    return { date:t, code:d.weather_code[i], label:k.t, kind:k.k,
+      max:d.temperature_2m_max[i], min:d.temperature_2m_min[i],
+      appMax:d.apparent_temperature_max[i], appMin:d.apparent_temperature_min[i],
+      pop:d.precipitation_probability_max[i]??0, psum:d.precipitation_sum[i]??0, wind:d.wind_speed_10m_max[i]??0,
+      snow: k.k==='snow' };
+  });
+  const hours = h.time.map((t,i)=>({time:t, temp:h.temperature_2m[i], pop:h.precipitation_probability[i]??0, code:h.weather_code[i]}));
+  return {days, hours};
+}
+function demoData(){
+  const base = new Date(); const days=[]; const hours=[];
+  const plan = [[17,9,2,10,0],[15,8,61,70,4],[14,7,3,30,0.2],[16,6,0,0,0],[13,5,1,10,0],[11,3,3,40,0.6],[12,4,0,0,0]];
+  plan.forEach((p,i)=>{
+    const dt = new Date(base.getFullYear(), base.getMonth(), base.getDate()+i);
+    const ds = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+    const k = wxInfo(p[2]);
+    days.push({date:ds, code:p[2], label:k.t, kind:k.k, max:p[0], min:p[1], appMax:p[0]-2, appMin:p[1]-3, pop:p[3], psum:p[4], wind:4+i%3, snow:k.k==='snow'});
+    for(let hh=0;hh<24;hh++){
+      const t = p[1] + (p[0]-p[1]) * Math.max(0, Math.sin((hh-6)/16*Math.PI));
+      hours.push({time:`${ds}T${String(hh).padStart(2,'0')}:00`, temp:t, pop: p[3] ? Math.round(p[3]*(0.5+0.5*Math.sin(hh/4))) : 0, code: p[2]});
+    }
+  });
+  return {days, hours};
+}
+
+/* ---------- render ---------- */
+const CAT = {outer:'アウター', top:'トップス', inner:'インナー', bottom:'ボトムス', shoes:'シューズ'};
+function fmtDay(ds){ const d=parseDate(ds); return `${d.getMonth()+1}月${d.getDate()}日（${WD[d.getDay()]}）`; }
+function shortFit(o){
+  const a = [];
+  if(o.outer) a.push(o.outer.name.replace(/^(コットンの|ウールの|厚手ウールの|撥水)/,''));
+  a.push(o.top.name.replace(/^(上質コットンの|リネンの)/,''));
+  return a.join('＋');
+}
+function render(){
+  const data = state.data; if(!data) return;
+  const day = data.days[state.dayIndex];
+  const res = buildOutfit(day, state.style, state.sens, state.shuffle);
+  const o = res.outfit;
+  $('#dateLabel').textContent = (state.dayIndex===0 ? 'きょう　' : '') + fmtDay(day.date);
+  $('#placeName').textContent = state.place.name;
+
+  const rows = [];
+  for(const k of ['outer','top','inner','bottom','shoes']){
+    const it = o[k]; if(!it) continue;
+    rows.push(`<li><span class="cat">${CAT[k]}</span><span class="nm">${it.name}</span><span class="col"><i class="sw" style="background:${it.color}"></i>${it.colorName}</span></li>`);
+  }
+  for(const e of o.extras.filter(Boolean))
+    rows.push(`<li><span class="cat">小物</span><span class="nm">${e.name}</span><span class="col"><i class="sw" style="background:${e.color}"></i>${e.colorName}</span></li>`);
+
+  // hourly
+  const hrs = data.hours.filter(h=>h.time.startsWith(day.date)).filter(h=>{const hh=+h.time.slice(11,13); return hh>=6 && hh%2===0;});
+  const hourHtml = hrs.map(h=>`<div class="hr"><div class="t">${+h.time.slice(11,13)}時</div>${wxIcon(wxInfo(h.code).k)}<div class="d">${Math.round(h.temp)}°</div><div class="p">${h.pop>=20?h.pop+'%':''}</div></div>`).join('');
+
+  // week
+  const week = data.days.map((d,i)=>{
+    const rr = buildOutfit(d, state.style, state.sens, 0);
+    const dt = parseDate(d.date); const wd = dt.getDay();
+    const umb = rr.outfit.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
+    return `<li><button data-i="${i}" aria-current="${i===state.dayIndex}">
+      <span class="day ${wd===6?'sat':wd===0?'sun':''}">${i===0?'きょう':i===1?'あした':WD[wd]+'曜'}<small>${dt.getMonth()+1}/${dt.getDate()}</small></span>
+      ${wxIcon(d.kind)}
+      <span class="fit">${shortFit(rr.outfit)}${umb?`<small>${umb.name}・降水${d.pop}%</small>`:''}</span>
+      <span class="tt">${Math.round(d.max)}° <span>${Math.round(d.min)}°</span></span>
+    </button></li>`;
+  }).join('');
+
+  $('#main').innerHTML = `
+    <div class="wx">
+      <div class="wicon">${wxIcon(day.kind)}</div>
+      <div>
+        <div class="label">${day.label}</div>
+        <div class="temps">${Math.round(day.max)}°<small> / ${Math.round(day.min)}°</small></div>
+        <div class="meta">体感 <em>${Math.round(res.eff)}°</em> 雨 <em>${day.pop}%</em> 風 <em>${Math.round(day.wind)}m/s</em></div>
+      </div>
+    </div>
+    <div class="seg" role="group" aria-label="スタイル">
+      <button data-style="kirei" aria-pressed="${state.style==='kirei'}">きれいめリラックス</button>
+      <button data-style="casual" aria-pressed="${state.style==='casual'}">カジュアル</button>
+    </div>
+    <div class="lay">
+      ${renderLay(res, hashStr(day.date+state.style+state.shuffle))}
+    </div>
+    <p class="comment">${LEVEL_TEXT[res.lv]}</p>
+    ${res.notes.map(n=>`<p class="comment" style="font-weight:400;font-size:14px;margin-top:4px">${n}</p>`).join('')}
+    <button class="shuffle" id="shuffleBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>別のコーデを見る</button>
+    <ul class="items">${rows.join('')}</ul>
+    ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}
+    ${state.demo ? `<p class="notice">天気を取得できなかったため、サンプルの天気で表示しています。ネットにつながる環境で開くと実際の予報に切り替わります。</p>`:''}
+    <section><h2>時間ごとの天気</h2><div class="hours">${hourHtml}</div></section>
+    <section><h2>週間コーデ</h2><ul class="week">${week}</ul></section>
+  `;
+}
+
+/* ---------- events ---------- */
+$('#main').addEventListener('click', e => {
+  const s = e.target.closest('[data-style]');
+  if(s){ state.style = s.dataset.style; state.shuffle=0; store.set('style', state.style); render(); return; }
+  if(e.target.closest('#shuffleBtn')){ state.shuffle++; render(); return; }
+  const w = e.target.closest('[data-i]');
+  if(w){ state.dayIndex = +w.dataset.i; state.shuffle=0; render(); window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
+});
+
+const SENS = [[-3,'寒がり'],[-1.5,'やや\n寒がり'],[0,'ふつう'],[1.5,'やや\n暑がり'],[3,'暑がり']];
+function renderSens(){
+  $('#sens').innerHTML = SENS.map(([v,l])=>`<button data-v="${v}" aria-pressed="${state.sens===v}">${l.replace('\n','<br>')}</button>`).join('');
+}
+$('#sens').addEventListener('click', e=>{
+  const b=e.target.closest('[data-v]'); if(!b) return;
+  state.sens = +b.dataset.v; store.set('sens', state.sens); renderSens(); render();
+});
+const wrap = $('#sheetWrap');
+const openSheet = () => { wrap.classList.add('open'); renderSens(); $('#msg').textContent=''; };
+const closeSheet = () => wrap.classList.remove('open');
+$('#setBtn').onclick = openSheet; $('#placeBtn').onclick = openSheet;
+$('#scrim').onclick = closeSheet; $('#closeBtn').onclick = closeSheet;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSheet(); });
+
+$('#searchForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const q = $('#q').value.trim(); if(!q) return;
+  $('#msg').textContent = '検索しています…'; $('#results').innerHTML='';
+  try{
+    const u = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=10&language=ja&format=json&countryCode=JP`;
+    const j = await (await fetch(u)).json();
+    const list = j.results || [];
+    $('#msg').textContent = list.length ? '' : `「${q}」に一致する地点が見つかりません。市区町村名で試してください。`;
+    $('#results').innerHTML = list.map((p,i)=>`<li><button data-p="${i}">${p.name}<small>${[p.admin1,p.admin2].filter(Boolean).join(' ')}</small></button></li>`).join('');
+    $('#results').onclick = ev => {
+      const b = ev.target.closest('[data-p]'); if(!b) return;
+      const p = list[+b.dataset.p];
+      setPlace({name:p.name, admin:p.admin1||'', lat:p.latitude, lon:p.longitude});
+    };
+  }catch(err){ $('#msg').textContent = '地点を検索できませんでした。通信状況を確認してもう一度試してください。'; }
+});
+$('#gpsBtn').onclick = () => {
+  if(!navigator.geolocation){ $('#msg').textContent='この環境では現在地を取得できません。地点名で検索してください。'; return; }
+  $('#msg').textContent = '現在地を取得しています…';
+  navigator.geolocation.getCurrentPosition(
+    pos => setPlace({name:'現在地', admin:'', lat:+pos.coords.latitude.toFixed(4), lon:+pos.coords.longitude.toFixed(4)}),
+    () => { $('#msg').textContent='現在地を取得できませんでした。位置情報の許可を確認するか、地点名で検索してください。'; },
+    {timeout:10000, maximumAge:600000}
+  );
+};
+function setPlace(p){
+  state.place = p; store.set('place', p); state.dayIndex=0; state.shuffle=0;
+  $('#results').innerHTML=''; $('#q').value=''; closeSheet(); load();
+}
+
+async function load(){
+  $('#placeName').textContent = state.place.name;
+  try{
+    state.data = await fetchWeather(state.place.lat, state.place.lon);
+    state.demo = false;
+  }catch(e){
+    state.data = demoData(); state.demo = true;
+  }
+  render();
+}
+load();
+// refresh when returning to the app after a while
+let hiddenAt = 0;
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) hiddenAt = Date.now();
+  else if(hiddenAt && Date.now()-hiddenAt > 30*60*1000) load();
+});
+})();
+</script>
+</body>
+</html>
