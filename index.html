@@ -17,13 +17,14 @@
 <style>
 :root{
   --ground:#E3E6E1;
-  --paper:#F3F4F0;
+  --paper:#F5F6F2;
   --linen:#D6DBD3;
   --ink:#1E2629;
   --sub:#5D676A;
-  --line:#C6CCC5;
+  --line:#CDD2CB;
   --indigo:#2F4A6B;
   --indigo-pale:#DCE3EA;
+  --warm:#9A4A3E;
   --num:"Archivo", "Zen Kaku Gothic New", sans-serif;
 }
 *{box-sizing:border-box}
@@ -36,83 +37,94 @@ body{
 }
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
-.app{
-  max-width:460px;margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 40px);
-}
-/* top */
-.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.place{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
-.place b{font-size:22px;font-weight:700;letter-spacing:.02em;line-height:1.3}
-.place b::after{content:"";display:inline-block;width:7px;height:7px;margin-left:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-4px) rotate(45deg)}
-.place span{font-size:13px;color:var(--sub)}
-.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--paper)}
-.iconbtn svg{width:20px;height:20px}
+.app{max-width:460px;margin:0 auto;padding:0 14px calc(env(safe-area-inset-bottom) + 40px)}
 
-/* weather summary */
-.wx{display:flex;align-items:center;gap:14px;margin:18px 0 14px}
-.wx .wicon{width:52px;height:52px;flex:none}
-.wx .label{font-size:15px;font-weight:500}
-.wx .temps{font-family:var(--num);font-stretch:72%;font-weight:400;font-size:34px;line-height:1;letter-spacing:-.01em}
-.wx .temps small{font-size:22px;color:var(--sub);font-weight:300}
-.wx .meta{font-size:13px;color:var(--sub);margin-top:4px;word-spacing:.4em}
-.wx .meta em{font-style:normal;font-family:var(--num);font-stretch:80%;color:var(--ink);font-weight:500}
+/* header + period tabs (sticky) */
+.head{position:sticky;top:0;z-index:5;background:var(--ground);padding:calc(env(safe-area-inset-top) + 10px) 0 10px;margin:0 -14px;padding-left:14px;padding-right:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.place{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-width:0}
+.place b{font-size:20px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.place b::after{content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-4px) rotate(45deg)}
+.place span{font-size:12px;color:var(--sub)}
+.iconbtn{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--paper)}
+.iconbtn svg{width:19px;height:19px}
+.ptabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--paper);border-radius:14px;padding:4px;gap:4px}
+.ptabs button{padding:10px 0;border-radius:10px;font-size:15px;font-weight:700;color:var(--sub);transition:background .2s,color .2s}
+.ptabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 
-/* style switch */
-.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:999px;padding:4px;margin-bottom:14px}
-.seg button{padding:9px 6px;border-radius:999px;font-size:14px;font-weight:500;color:var(--sub);transition:background .2s,color .2s}
+/* main card */
+.card{background:var(--paper);border-radius:22px;padding:14px 14px 12px}
+.when{font-size:13px;color:var(--sub);margin:0 2px 6px}
+.cols{display:grid;grid-template-columns:1fr 1.08fr;gap:12px;align-items:start}
+.left{min-width:0}
+.wxhead{display:flex;align-items:center;gap:8px}
+.wxhead svg{width:54px;height:54px;flex:none}
+.wxhead .label{font-size:16px;font-weight:700;line-height:1.35}
+.temps{display:grid;grid-template-columns:1fr 1fr;margin:8px 0 10px}
+.temps div{display:flex;flex-direction:column}
+.temps b{font-family:var(--num);font-stretch:70%;font-weight:400;font-size:40px;line-height:1;letter-spacing:-.01em}
+.temps .lo b{color:var(--sub);font-weight:300}
+.temps small{font-family:var(--num);font-stretch:85%;font-size:13px;margin-top:3px;color:var(--sub)}
+.temps small.up{color:var(--warm)} .temps small.dn{color:var(--indigo)}
+.temps .cap{font-family:inherit;font-size:11px;color:var(--sub);margin:0 0 2px}
+.stats{display:grid;grid-template-columns:1fr 1fr;margin:0;border-top:1px solid var(--line)}
+.stats div{padding:7px 2px 6px;border-bottom:1px solid var(--line)}
+.stats div:nth-child(odd){border-right:1px solid var(--line);padding-right:8px}
+.stats div:nth-child(even){padding-left:10px}
+.stats dt{font-size:11px;color:var(--sub);line-height:1.2}
+.stats dd{margin:0;font-family:var(--num);font-stretch:80%;font-size:19px;font-weight:500;line-height:1.25}
+.stats dd small{font-size:12px;font-weight:400;margin-left:1px}
+.stats .pop dd{color:var(--indigo)}
+
+.lay{border-radius:16px;overflow:hidden;background:var(--linen)}
+.lay svg{display:block;width:100%;height:auto}
+
+.comment{margin:12px 0 0;background:var(--ground);border-radius:14px;padding:10px 12px;font-size:14px;line-height:1.65}
+.comment p{margin:0}
+.comment p+p{margin-top:4px;color:var(--sub);font-size:13px}
+.tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ground);border-radius:999px;padding:3px}
+.seg button{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;color:var(--sub);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-
-/* flat lay */
-.lay{position:relative;border-radius:22px;overflow:hidden;background:var(--linen)}
-.lay svg.board{display:block;width:100%;height:auto}
-.lay .feel{
-  position:absolute;right:14px;bottom:12px;
-  background:rgba(243,244,240,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border-radius:12px;padding:6px 10px;font-size:12px;color:var(--sub);text-align:right;line-height:1.35
-}
-.lay .feel b{display:block;font-family:var(--num);font-stretch:72%;font-size:22px;color:var(--ink);font-weight:500}
-.comment{margin:12px 2px 2px;font-size:15px;font-weight:500}
-.shuffle{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--indigo);padding:6px 2px;margin-top:2px}
+.shuffle{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--indigo);padding:6px 0;white-space:nowrap}
 .shuffle svg{width:15px;height:15px}
 
 /* items */
-.items{list-style:none;margin:10px 0 0;padding:0;border-top:1px solid var(--line)}
-.items li{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.items{list-style:none;margin:14px 0 0;padding:0 4px}
+.items li{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.items li:first-child{border-top:1px solid var(--line)}
 .items .cat{font-size:12px;color:var(--sub)}
-.items .nm{font-size:15px;font-weight:500;line-height:1.4}
-.items .col{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--sub);white-space:nowrap}
-.items .sw{width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.items .nm{font-size:14px;font-weight:500;line-height:1.4}
+.items .col{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--sub);white-space:nowrap}
+.items .sw{width:13px;height:13px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
 
 /* rain */
-.rain{margin-top:18px;background:var(--indigo-pale);border-radius:18px;padding:14px 16px;display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start}
-.rain svg{width:26px;height:26px;color:var(--indigo)}
-.rain p+p{margin-top:4px}
-.rain h3{margin:0;font-size:15px;color:var(--indigo)}
-.rain p{margin:0;font-size:14px}
+.rain{margin-top:14px;background:var(--indigo-pale);border-radius:18px;padding:12px 14px;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.rain svg{width:24px;height:24px;color:var(--indigo)}
+.rain h3{margin:0;font-size:14px;color:var(--indigo)}
+.rain p{margin:0;font-size:13px}
+.rain p+p{margin-top:3px}
 
-section{margin-top:30px}
-h2{font-size:16px;margin:0 0 10px;font-weight:700}
-
-/* hourly */
-.hours{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin:0 -18px;padding-left:18px;padding-right:18px}
+/* lower tabs */
+.ltabs{display:grid;grid-template-columns:1fr 1fr;margin-top:24px;border-bottom:1px solid var(--line)}
+.ltabs button{padding:10px 0;font-size:15px;font-weight:700;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px}
+.ltabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.panel{padding-top:12px}
+.hours{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin:0 -14px;padding-left:14px;padding-right:14px}
 .hours::-webkit-scrollbar{display:none}
-.hr{flex:none;width:58px;background:var(--paper);border-radius:14px;padding:8px 0 9px;text-align:center}
+.hr{flex:none;width:56px;background:var(--paper);border-radius:14px;padding:7px 0 8px;text-align:center}
 .hr .t{font-size:12px;color:var(--sub)}
 .hr svg{width:26px;height:26px;margin:2px auto 0;display:block}
 .hr .d{font-family:var(--num);font-stretch:80%;font-size:17px;font-weight:500}
 .hr .p{font-size:11px;color:var(--indigo);min-height:16px}
+.hr.now{box-shadow:inset 0 0 0 1.5px var(--ink)}
 
-/* week */
 .week{list-style:none;margin:0;padding:0}
-.week button{
-  width:100%;display:grid;grid-template-columns:54px 30px 1fr auto;align-items:center;gap:10px;
-  padding:10px 10px;border-radius:14px;text-align:left
-}
+.week button{width:100%;display:grid;grid-template-columns:50px 30px 1fr auto;align-items:center;gap:10px;padding:9px 10px;border-radius:14px;text-align:left}
 .week button[aria-current="true"]{background:var(--paper)}
 .week .day{font-size:14px;font-weight:500;line-height:1.25}
 .week .day small{display:block;font-size:12px;color:var(--sub);font-weight:400}
-.week .day.sat{color:#3A5A86}.week .day.sun{color:#9A4A3E}
+.week .day.sat{color:#3A5A86}.week .day.sun{color:var(--warm)}
 .week svg{width:28px;height:28px}
 .week .fit{font-size:13px;line-height:1.35}
 .week .fit small{display:block;color:var(--indigo);font-size:12px}
@@ -120,26 +132,23 @@ h2{font-size:16px;margin:0 0 10px;font-weight:700}
 .week .tt span{color:var(--sub);font-weight:300}
 
 .notice{background:var(--paper);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--sub);margin:14px 0 0}
-.foot{margin-top:34px;font-size:12px;color:var(--sub)}
+.foot{margin-top:30px;font-size:12px;color:var(--sub)}
 .foot a{color:var(--sub)}
-
-/* loading */
-.skeleton{height:420px;border-radius:22px;background:var(--linen);display:grid;place-items:center;color:var(--sub);font-size:14px}
+.skeleton{height:360px;border-radius:22px;background:var(--paper);display:grid;place-items:center;color:var(--sub);font-size:14px}
 
 /* sheet */
-.scrim{position:fixed;inset:0;visibility:hidden;background:rgba(30,38,41,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:10}
+.scrim{position:fixed;inset:0;visibility:hidden;background:rgba(30,38,41,.35);opacity:0;pointer-events:none;z-index:10}
 .sheet{
   position:fixed;left:0;right:0;bottom:0;z-index:11;max-width:460px;margin:0 auto;
   background:var(--paper);border-radius:22px 22px 0 0;
   padding:10px 20px calc(env(safe-area-inset-bottom) + 24px);
-  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
-  max-height:88vh;overflow-y:auto;visibility:hidden
+  transform:translateY(105%);max-height:88vh;overflow-y:auto;visibility:hidden
 }
+.scrim,.sheet{transition:opacity .25s,transform .3s cubic-bezier(.2,.8,.2,1),visibility .3s}
 .open .scrim{opacity:1;pointer-events:auto;visibility:visible}
 .open .sheet{transform:none;visibility:visible}
-.scrim,.sheet{transition-property:opacity,transform,visibility}
 .grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
-.sheet h2{font-size:17px}
+.sheet h2{font-size:17px;margin:0 0 4px}
 .sheet h3{font-size:14px;margin:22px 0 8px}
 .sheet .hint{font-size:12px;color:var(--sub);margin:6px 0 0}
 .search{display:flex;gap:8px}
@@ -153,24 +162,32 @@ h2{font-size:16px;margin:0 0 10px;font-weight:700}
 .sens{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:var(--ground);border-radius:12px;padding:4px}
 .sens button{padding:9px 0;border-radius:9px;font-size:12px;color:var(--sub);line-height:1.3}
 .sens button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
-.msg{font-size:13px;color:#8A3B2F;margin-top:8px;min-height:1em}
+.msg{font-size:13px;color:var(--warm);margin-top:8px;min-height:1em}
 
+@media (max-width:350px){ .cols{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-  <header class="top">
-    <button class="place" id="placeBtn" aria-label="地点を変更">
-      <b id="placeName">名古屋市</b>
-      <span id="dateLabel"></span>
-    </button>
-    <button class="iconbtn" id="setBtn" aria-label="設定">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
-    </button>
-  </header>
+  <div class="head">
+    <header class="top">
+      <button class="place" id="placeBtn" aria-label="地点を変更">
+        <b id="placeName">名古屋市</b>
+        <span id="dateLabel"></span>
+      </button>
+      <button class="iconbtn" id="setBtn" aria-label="設定">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+    </header>
+    <nav class="ptabs" id="ptabs" aria-label="表示する時間帯">
+      <button data-view="today" aria-pressed="true">今日</button>
+      <button data-view="tonight" aria-pressed="false">今夜</button>
+      <button data-view="tomorrow" aria-pressed="false">明日</button>
+    </nav>
+  </div>
 
-  <div id="main"><div class="skeleton" style="margin-top:18px">天気を読み込んでいます</div></div>
+  <div id="main"><div class="skeleton">天気を読み込んでいます</div></div>
 
   <footer class="foot">
     天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）
@@ -214,7 +231,8 @@ const state = {
   place: store.get('place', {name:'名古屋市', admin:'愛知県', lat:35.1815, lon:136.9066}),
   style: store.get('style', 'kirei'),
   sens: store.get('sens', 0),
-  dayIndex: 0,
+  view: {type:'today'},
+  lower: store.get('lower','hours'),
   shuffle: 0,
   data: null,
   demo: false
@@ -514,7 +532,7 @@ const LEVEL_TEXT = [
   '長袖1枚がちょうどいい気温。',
   '長袖に軽い羽織りがあると安心。',
   'ジャケットやブルゾンの出番。',
-  '薄手のコートやブルゾンに、ニットかスウェットを。',
+  '薄手のコートやブルゾンを羽織って。',
   '厚手のトップスに、しっかりめのアウターを重ねて。',
   '冬のアウターに、首元か頭の小物を足して。',
   '真冬の寒さ。ダウンと小物で首元と頭を守って。'
@@ -544,13 +562,14 @@ function wxInfo(code){
   if(code>=95) return {t:'雷雨',k:'storm'};
   return {t:'—',k:'cloud'};
 }
-function wxIcon(k){
+function wxIcon(k, night){
   const ink='#1E2629', ind='#2F4A6B', sun='#C9A15A';
-  const cloud = (dx=0,dy=0,f='#F3F4F0') => `<path transform="translate(${dx},${dy})" d="M14 34 Q6 34 6 27 Q6 20 14 20 Q16 12 25 12 Q34 12 36 20 Q44 20 44 27 Q44 34 36 34 Z" fill="${f}" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/>`;
+  const cloud = (dx=0,dy=0,f='#F5F6F2') => `<path transform="translate(${dx},${dy})" d="M14 34 Q6 34 6 27 Q6 20 14 20 Q16 12 25 12 Q34 12 36 20 Q44 20 44 27 Q44 34 36 34 Z" fill="${f}" stroke="${ink}" stroke-width="2" stroke-linejoin="round"/>`;
   const sunG = (cx,cy,r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${sun}"/>` + Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${(cx+Math.cos(a)*(r+3)).toFixed(1)} ${(cy+Math.sin(a)*(r+3)).toFixed(1)}L${(cx+Math.cos(a)*(r+7)).toFixed(1)} ${(cy+Math.sin(a)*(r+7)).toFixed(1)}" stroke="${sun}" stroke-width="2.2" stroke-linecap="round"/>`}).join('');
+  const moon = (cx,cy,r) => `<path d="M${cx+r*0.35} ${cy-r} A${r} ${r} 0 1 0 ${cx+r} ${cy+r*0.45} A${r*0.8} ${r*0.8} 0 1 1 ${cx+r*0.35} ${cy-r} Z" fill="${sun}"/>`;
   let b='';
-  if(k==='sun') b=sunG(25,25,9);
-  else if(k==='partly') b=sunG(18,17,7)+cloud(4,6);
+  if(k==='sun') b = night ? moon(24,25,12) : sunG(25,25,9);
+  else if(k==='partly') b = (night ? moon(17,16,9) : sunG(18,17,7)) + cloud(4,6);
   else if(k==='cloud') b=cloud(0,2);
   else if(k==='fog') b=cloud(0,-4)+`<path d="M8 38 L42 38 M12 44 L38 44" stroke="${ink}" stroke-width="2" stroke-linecap="round"/>`;
   else if(k==='rain') b=cloud(0,-4)+`<path d="M16 36 L13 44 M26 36 L23 44 M36 36 L33 44" stroke="${ind}" stroke-width="2.4" stroke-linecap="round"/>`;
@@ -561,7 +580,7 @@ function wxIcon(k){
 
 /* ---------- outfit engine ---------- */
 function buildOutfit(day, style, sens, seed){
-  const r = rng(hashStr(`${day.date}|${style}|${seed}`));
+  const r = rng(hashStr(`${day.key||day.date}|${style}|${seed}`));
   const eff = day.appMin*0.4 + day.appMax*0.6 + sens;
   let lv = levelOf(eff);
   const cat = style==='kirei' ? KIREI : CASUAL;
@@ -618,7 +637,7 @@ function buildOutfit(day, style, sens, seed){
   return {lv, eff, outfit:o, notes, rain, rainy};
 }
 
-/* ---------- flat-lay renderer ---------- */
+/* ---------- flat-lay renderer (portrait, fits the right column) ---------- */
 function place(item, slot, jitter){
   const g = G[item.shape](item.color, item.v);
   let w=g.w, h=g.h, rot=jitter;
@@ -631,39 +650,33 @@ function place(item, slot, jitter){
 function renderLay(res, seed){
   const o = res.outfit; const r = rng(seed);
   const j = () => (r()-0.5)*7;
-  let slots;
-  if(o.outer){
-    slots = { outer:{x:8,y:10,w:196,h:252}, top:{x:206,y:10,w:146,h:140}, bottom:{x:214,y:154,w:132,h:258},
-              extra:{x:14,y:266,w:190,h:56}, shoes:{x:14,y:324,w:190,h:88} };
-  } else {
-    slots = { top:{x:10,y:16,w:196,h:200}, bottom:{x:214,y:12,w:132,h:262},
-              shoes:{x:14,y:300,w:192,h:100}, extra:{x:222,y:286,w:126,h:124} };
-  }
-  if(o.outer && !o.extras.filter(Boolean).length) slots.shoes = {x:14,y:282,w:190,h:124};
-  let body = '';
-  if(o.outer) body += place(o.outer, slots.outer, j());
-  body += place(o.top, slots.top, j());
-  body += place(o.bottom, slots.bottom, j()*0.5);
-  body += place(o.shoes, slots.shoes, j()*0.5);
   const ex = o.extras.filter(Boolean).sort((p,q)=>{ const a=G[p.shape](p.color), b=G[q.shape](q.color); return (b.h/b.w)-(a.h/a.w); });
-  if(ex.length===1){
-    const e=ex[0]; const s = {...slots.extra};
-    if(!o.outer && G[e.shape](e.color).h < 90){ s.y += 20; s.h -= 40; }
-    body += place(e, s, j());
-  } else if(ex.length===2){
-    const s=slots.extra;
-    const wide = s.w > s.h;
-    const a = wide ? {x:s.x,y:s.y,w:s.w*0.62,h:s.h} : {x:s.x,y:s.y,w:s.w/2,h:s.h};
-    const b = wide ? {x:s.x+s.w*0.62,y:s.y,w:s.w*0.38,h:s.h} : {x:s.x+s.w/2,y:s.y,w:s.w/2,h:s.h};
-    body += place(ex[0], a, j()) + place(ex[1], b, j());
+  let s;
+  if(o.outer){
+    s = { outer:{x:4,y:6,w:128,h:178}, top:{x:124,y:6,w:92,h:96}, bottom:{x:134,y:104,w:82,h:202},
+          extra:{x:6,y:186,w:124,h:52}, shoes:{x:6,y:242,w:124,h:62} };
+    if(!ex.length) s.shoes = {x:6,y:198,w:124,h:100};
+  } else {
+    s = { top:{x:4,y:8,w:132,h:138}, bottom:{x:136,y:6,w:80,h:298},
+          extra:{x:6,y:150,w:126,h:70}, shoes:{x:6,y:226,w:126,h:76} };
+    if(!ex.length){ s.top={x:4,y:10,w:132,h:164}; s.shoes={x:6,y:192,w:126,h:100}; }
   }
-  // linen texture
+  let body = '';
+  if(o.outer) body += place(o.outer, s.outer, j());
+  body += place(o.top, s.top, j());
+  body += place(o.bottom, s.bottom, j()*0.5);
+  body += place(o.shoes, s.shoes, j()*0.5);
+  if(ex.length===1) body += place(ex[0], s.extra, j());
+  else if(ex.length===2){
+    const e=s.extra;
+    body += place(ex[0], {x:e.x,y:e.y,w:e.w*0.62,h:e.h}, j()) + place(ex[1], {x:e.x+e.w*0.62,y:e.y,w:e.w*0.38,h:e.h}, j());
+  }
   let tex=''; const rr=rng(11);
-  for(let i=0;i<70;i++){ const y=(rr()*420).toFixed(0); tex+=`M0 ${y}L360 ${y}`; }
-  return `<svg class="board" viewBox="0 0 360 420" role="img" aria-label="きょうのコーデのイラスト">
-    <defs><filter id="sh" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#1E2629" flood-opacity=".16"/></filter></defs>
-    <rect width="360" height="420" fill="#D6DBD3"/>
-    <path d="${tex}" stroke="#C9CFC6" stroke-width=".6" opacity=".7"/>
+  for(let i=0;i<54;i++){ const y=(rr()*310).toFixed(0); tex+=`M0 ${y}L220 ${y}`; }
+  return `<svg viewBox="0 0 220 310" role="img" aria-label="コーデのイラスト">
+    <defs><filter id="sh" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="1.8" stdDeviation="1.8" flood-color="#1E2629" flood-opacity=".16"/></filter></defs>
+    <rect width="220" height="310" fill="#D6DBD3"/>
+    <path d="${tex}" stroke="#C9CFC6" stroke-width=".5" opacity=".7"/>
     ${body}
   </svg>`;
 }
@@ -672,41 +685,66 @@ function renderLay(res, seed){
 async function fetchWeather(lat, lon){
   const u = new URL('https://api.open-meteo.com/v1/forecast');
   u.search = new URLSearchParams({
-    latitude:lat, longitude:lon, timezone:'Asia/Tokyo', forecast_days:'7', wind_speed_unit:'ms',
+    latitude:lat, longitude:lon, timezone:'Asia/Tokyo', forecast_days:'7', past_days:'1', wind_speed_unit:'ms',
     daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
-    hourly:'temperature_2m,precipitation_probability,weather_code'
+    hourly:'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m'
   });
   const res = await fetch(u, {cache:'no-store'});
   if(!res.ok) throw new Error('HTTP '+res.status);
   return normalize(await res.json());
 }
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 function normalize(j){
   const d=j.daily, h=j.hourly;
-  const days = d.time.map((t,i)=>{
+  const hours = h.time.map((t,i)=>({time:t, date:t.slice(0,10), hh:+t.slice(11,13),
+    temp:h.temperature_2m[i], app:h.apparent_temperature[i], hum:h.relative_humidity_2m[i],
+    pop:h.precipitation_probability[i]??0, prec:h.precipitation[i]??0, code:h.weather_code[i], wind:h.wind_speed_10m[i]??0}));
+  const all = d.time.map((t,i)=>{
     const k = wxInfo(d.weather_code[i]);
-    return { date:t, code:d.weather_code[i], label:k.t, kind:k.k,
+    const hs = hours.filter(x=>x.date===t);
+    return { date:t, key:t, code:d.weather_code[i], label:k.t, kind:k.k,
       max:d.temperature_2m_max[i], min:d.temperature_2m_min[i],
       appMax:d.apparent_temperature_max[i], appMin:d.apparent_temperature_min[i],
       pop:d.precipitation_probability_max[i]??0, psum:d.precipitation_sum[i]??0, wind:d.wind_speed_10m_max[i]??0,
-      snow: k.k==='snow' };
+      hum: Math.round(avg(hs.map(x=>x.hum).filter(v=>v!=null))), snow: k.k==='snow', night:false };
   });
-  const hours = h.time.map((t,i)=>({time:t, temp:h.temperature_2m[i], pop:h.precipitation_probability[i]??0, code:h.weather_code[i]}));
-  return {days, hours};
+  for(let i=1;i<all.length;i++){ all[i].dMax = all[i].max-all[i-1].max; all[i].dMin = all[i].min-all[i-1].min; }
+  return {days: all.slice(1), hours, fetchedAt: new Date()};
+}
+function tonightOf(data){
+  const d0 = data.days[0];
+  const hs = data.hours.filter(x=>x.date===d0.date && x.hh>=18);
+  if(!hs.length) return {...d0, night:true, key:d0.date+'n'};
+  const wet = hs.filter(x=>x.prec>=0.2 || x.code>=51);
+  const code = wet.length ? Math.max(...wet.map(x=>x.code)) : Math.max(...hs.map(x=>Math.min(x.code,3)));
+  const k = wxInfo(code);
+  const t = hs.map(x=>x.temp), a = hs.map(x=>x.app);
+  return { date:d0.date, key:d0.date+'n', code, label:k.t, kind:k.k,
+    max:Math.max(...t), min:Math.min(...t), appMax:Math.max(...a), appMin:Math.min(...a),
+    pop:Math.max(...hs.map(x=>x.pop)), psum:hs.reduce((s,x)=>s+x.prec,0), wind:Math.max(...hs.map(x=>x.wind)),
+    hum:Math.round(avg(hs.map(x=>x.hum))), snow:k.k==='snow', night:true,
+    t18:hs[0].temp, tLast:hs[hs.length-1].temp };
 }
 function demoData(){
-  const base = new Date(); const days=[]; const hours=[];
-  const plan = [[17,9,2,10,0],[15,8,61,70,4],[14,7,3,30,0.2],[16,6,0,0,0],[13,5,1,10,0],[11,3,3,40,0.6],[12,4,0,0,0]];
+  const base = new Date(); const daily={time:[],weather_code:[],temperature_2m_max:[],temperature_2m_min:[],apparent_temperature_max:[],apparent_temperature_min:[],precipitation_probability_max:[],precipitation_sum:[],wind_speed_10m_max:[]};
+  const hourly={time:[],temperature_2m:[],apparent_temperature:[],relative_humidity_2m:[],precipitation_probability:[],precipitation:[],weather_code:[],wind_speed_10m:[]};
+  const plan = [[16,10,3,10,0],[20,12,3,0,0],[15,8,61,70,4],[14,7,3,30,0.2],[16,6,0,0,0],[13,5,1,10,0],[11,3,3,40,0.6],[12,4,0,0,0]];
   plan.forEach((p,i)=>{
-    const dt = new Date(base.getFullYear(), base.getMonth(), base.getDate()+i);
+    const dt = new Date(base.getFullYear(), base.getMonth(), base.getDate()+i-1);
     const ds = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
-    const k = wxInfo(p[2]);
-    days.push({date:ds, code:p[2], label:k.t, kind:k.k, max:p[0], min:p[1], appMax:p[0]-2, appMin:p[1]-3, pop:p[3], psum:p[4], wind:4+i%3, snow:k.k==='snow'});
+    daily.time.push(ds); daily.weather_code.push(p[2]); daily.temperature_2m_max.push(p[0]); daily.temperature_2m_min.push(p[1]);
+    daily.apparent_temperature_max.push(p[0]-2); daily.apparent_temperature_min.push(p[1]-3);
+    daily.precipitation_probability_max.push(p[3]); daily.precipitation_sum.push(p[4]); daily.wind_speed_10m_max.push(4+i%3);
     for(let hh=0;hh<24;hh++){
       const t = p[1] + (p[0]-p[1]) * Math.max(0, Math.sin((hh-6)/16*Math.PI));
-      hours.push({time:`${ds}T${String(hh).padStart(2,'0')}:00`, temp:t, pop: p[3] ? Math.round(p[3]*(0.5+0.5*Math.sin(hh/4))) : 0, code: p[2]});
+      hourly.time.push(`${ds}T${String(hh).padStart(2,'0')}:00`); hourly.temperature_2m.push(t); hourly.apparent_temperature.push(t-2.5);
+      hourly.relative_humidity_2m.push(Math.round(70 - 20*Math.max(0, Math.sin((hh-6)/16*Math.PI)) + (p[3]>50?15:0)));
+      const pp = p[3] ? Math.round(p[3]*(0.5+0.5*Math.sin(hh/4))) : 0;
+      hourly.precipitation_probability.push(pp); hourly.precipitation.push(p[4] ? +(p[4]/24*(pp/p[3])*2).toFixed(1) : 0);
+      hourly.weather_code.push(p[2]===61 && pp<40 ? 3 : p[2]); hourly.wind_speed_10m.push(3);
     }
   });
-  return {days, hours};
+  return normalize({daily, hourly});
 }
 
 /* ---------- render ---------- */
@@ -718,13 +756,42 @@ function shortFit(o){
   a.push(o.top.name.replace(/^(上質コットンの|リネンの)/,''));
   return a.join('＋');
 }
+const signed = v => v==null ? '' : (Math.round(v)>0 ? '+' : Math.round(v)<0 ? '−' : '±') + Math.abs(Math.round(v));
+function periodFor(){
+  const v = state.view, data = state.data;
+  if(v.type==='tonight') return tonightOf(data);
+  if(v.type==='tomorrow') return data.days[1];
+  if(v.type==='day') return data.days[v.i];
+  return data.days[0];
+}
+function hoursFor(p){
+  const H = state.data.hours;
+  if(state.view.type==='today'){
+    const now = new Date(); const ds = state.data.days[0].date;
+    const idx = H.findIndex(h=>h.date===ds && h.hh===now.getHours());
+    return H.slice(Math.max(0,idx), Math.max(0,idx)+24);
+  }
+  if(p.night){
+    const idx = H.findIndex(h=>h.date===p.date && h.hh===18);
+    return H.slice(idx, idx+12);
+  }
+  return H.filter(h=>h.date===p.date && h.hh>=5);
+}
 function render(){
   const data = state.data; if(!data) return;
-  const day = data.days[state.dayIndex];
-  const res = buildOutfit(day, state.style, state.sens, state.shuffle);
+  const p = periodFor();
+  const res = buildOutfit(p, state.style, state.sens, state.shuffle);
   const o = res.outfit;
-  $('#dateLabel').textContent = (state.dayIndex===0 ? 'きょう　' : '') + fmtDay(day.date);
+  const upd = data.fetchedAt ? `${data.fetchedAt.getHours()}:${String(data.fetchedAt.getMinutes()).padStart(2,'0')} 更新` : '';
+  $('#dateLabel').textContent = `${fmtDay(data.days[0].date)}　${state.demo ? 'サンプル表示' : upd}`;
   $('#placeName').textContent = state.place.name;
+  document.querySelectorAll('#ptabs [data-view]').forEach(b=> b.setAttribute('aria-pressed', String(b.dataset.view===state.view.type)));
+
+  const when = p.night ? `今夜　18時〜24時` : (state.view.type==='today' ? 'きょう　' : state.view.type==='tomorrow' ? 'あした　' : '') + fmtDay(p.date);
+  const temps = p.night
+    ? `<div><span class="cap">18時</span><b>${Math.round(p.t18)}°</b></div><div class="lo"><span class="cap">24時ごろ</span><b>${Math.round(p.tLast)}°</b></div>`
+    : `<div><b>${Math.round(p.max)}°</b><small class="${Math.round(p.dMax)>0?'up':Math.round(p.dMax)<0?'dn':''}">${p.dMax!=null?'['+signed(p.dMax)+']':''}</small></div>
+       <div class="lo"><b>${Math.round(p.min)}°</b><small class="${Math.round(p.dMin)>0?'up':Math.round(p.dMin)<0?'dn':''}">${p.dMin!=null?'['+signed(p.dMin)+']':''}</small></div>`;
 
   const rows = [];
   for(const k of ['outer','top','inner','bottom','shoes']){
@@ -734,57 +801,74 @@ function render(){
   for(const e of o.extras.filter(Boolean))
     rows.push(`<li><span class="cat">小物</span><span class="nm">${e.name}</span><span class="col"><i class="sw" style="background:${e.color}"></i>${e.colorName}</span></li>`);
 
-  // hourly
-  const hrs = data.hours.filter(h=>h.time.startsWith(day.date)).filter(h=>{const hh=+h.time.slice(11,13); return hh>=6 && hh%2===0;});
-  const hourHtml = hrs.map(h=>`<div class="hr"><div class="t">${+h.time.slice(11,13)}時</div>${wxIcon(wxInfo(h.code).k)}<div class="d">${Math.round(h.temp)}°</div><div class="p">${h.pop>=20?h.pop+'%':''}</div></div>`).join('');
-
-  // week
-  const week = data.days.map((d,i)=>{
-    const rr = buildOutfit(d, state.style, state.sens, 0);
-    const dt = parseDate(d.date); const wd = dt.getDay();
-    const umb = rr.outfit.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
-    return `<li><button data-i="${i}" aria-current="${i===state.dayIndex}">
-      <span class="day ${wd===6?'sat':wd===0?'sun':''}">${i===0?'きょう':i===1?'あした':WD[wd]+'曜'}<small>${dt.getMonth()+1}/${dt.getDate()}</small></span>
-      ${wxIcon(d.kind)}
-      <span class="fit">${shortFit(rr.outfit)}${umb?`<small>${umb.name}・降水${d.pop}%</small>`:''}</span>
-      <span class="tt">${Math.round(d.max)}° <span>${Math.round(d.min)}°</span></span>
-    </button></li>`;
-  }).join('');
+  let panel = '';
+  if(state.lower==='hours'){
+    const hrs = hoursFor(p);
+    panel = `<div class="hours">${hrs.map((h,ix)=>`<div class="hr${state.view.type==='today'&&ix===0?' now':''}"><div class="t">${state.view.type==='today'&&ix===0?'今':h.hh+'時'}</div>${wxIcon(wxInfo(h.code).k, h.hh>=18||h.hh<6)}<div class="d">${Math.round(h.temp)}°</div><div class="p">${h.pop>=20?h.pop+'%':''}</div></div>`).join('')}</div>`;
+  } else {
+    const cur = state.view.type==='today'||state.view.type==='tonight' ? 0 : state.view.type==='tomorrow' ? 1 : state.view.i;
+    panel = `<ul class="week">${data.days.map((d,i)=>{
+      const rr = buildOutfit(d, state.style, state.sens, 0);
+      const dt = parseDate(d.date); const wd = dt.getDay();
+      const umb = rr.outfit.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
+      return `<li><button data-i="${i}" aria-current="${i===cur}">
+        <span class="day ${wd===6?'sat':wd===0?'sun':''}">${i===0?'きょう':i===1?'あした':WD[wd]+'曜'}<small>${dt.getMonth()+1}/${dt.getDate()}</small></span>
+        ${wxIcon(d.kind)}
+        <span class="fit">${shortFit(rr.outfit)}${umb?`<small>${umb.name}・降水${d.pop}%</small>`:''}</span>
+        <span class="tt">${Math.round(d.max)}° <span>${Math.round(d.min)}°</span></span>
+      </button></li>`; }).join('')}</ul>`;
+  }
 
   $('#main').innerHTML = `
-    <div class="wx">
-      <div class="wicon">${wxIcon(day.kind)}</div>
-      <div>
-        <div class="label">${day.label}</div>
-        <div class="temps">${Math.round(day.max)}°<small> / ${Math.round(day.min)}°</small></div>
-        <div class="meta">体感 <em>${Math.round(res.eff)}°</em> 雨 <em>${day.pop}%</em> 風 <em>${Math.round(day.wind)}m/s</em></div>
+    <div class="card">
+      <div class="when">${when}</div>
+      <div class="cols">
+        <div class="left">
+          <div class="wxhead">${wxIcon(p.kind, p.night)}<div class="label">${p.label}</div></div>
+          <div class="temps">${temps}</div>
+          <dl class="stats">
+            <div class="pop"><dt>降水確率</dt><dd>${p.pop}<small>%</small></dd></div>
+            <div><dt>湿度</dt><dd>${isFinite(p.hum)?p.hum:'—'}<small>%</small></dd></div>
+            <div><dt>体感</dt><dd>${Math.round(res.eff)}<small>°</small></dd></div>
+            <div><dt>風速</dt><dd>${Math.round(p.wind)}<small>m/s</small></dd></div>
+          </dl>
+        </div>
+        <div class="lay">${renderLay(res, hashStr(p.key+state.style+state.shuffle))}</div>
+      </div>
+      <div class="comment"><p>${LEVEL_TEXT[res.lv]}</p>${res.notes.map(n=>`<p>${n}</p>`).join('')}</div>
+      <div class="tools">
+        <div class="seg" role="group" aria-label="スタイル">
+          <button data-style="kirei" aria-pressed="${state.style==='kirei'}">きれいめ</button>
+          <button data-style="casual" aria-pressed="${state.style==='casual'}">カジュアル</button>
+        </div>
+        <button class="shuffle" id="shuffleBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>別のコーデ</button>
       </div>
     </div>
-    <div class="seg" role="group" aria-label="スタイル">
-      <button data-style="kirei" aria-pressed="${state.style==='kirei'}">きれいめリラックス</button>
-      <button data-style="casual" aria-pressed="${state.style==='casual'}">カジュアル</button>
-    </div>
-    <div class="lay">
-      ${renderLay(res, hashStr(day.date+state.style+state.shuffle))}
-    </div>
-    <p class="comment">${LEVEL_TEXT[res.lv]}</p>
-    ${res.notes.map(n=>`<p class="comment" style="font-weight:400;font-size:14px;margin-top:4px">${n}</p>`).join('')}
-    <button class="shuffle" id="shuffleBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>別のコーデを見る</button>
     <ul class="items">${rows.join('')}</ul>
     ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}
     ${state.demo ? `<p class="notice">天気を取得できなかったため、サンプルの天気で表示しています。ネットにつながる環境で開くと実際の予報に切り替わります。</p>`:''}
-    <section><h2>時間ごとの天気</h2><div class="hours">${hourHtml}</div></section>
-    <section><h2>週間コーデ</h2><ul class="week">${week}</ul></section>
+    <div class="ltabs" role="tablist">
+      <button role="tab" data-lower="hours" aria-selected="${state.lower==='hours'}">1時間ごと</button>
+      <button role="tab" data-lower="week" aria-selected="${state.lower==='week'}">週間コーデ</button>
+    </div>
+    <div class="panel" role="tabpanel">${panel}</div>
   `;
 }
 
 /* ---------- events ---------- */
+$('#ptabs').addEventListener('click', e=>{
+  const b = e.target.closest('[data-view]'); if(!b) return;
+  state.view = {type:b.dataset.view}; state.shuffle=0; render();
+});
 $('#main').addEventListener('click', e => {
   const s = e.target.closest('[data-style]');
   if(s){ state.style = s.dataset.style; state.shuffle=0; store.set('style', state.style); render(); return; }
   if(e.target.closest('#shuffleBtn')){ state.shuffle++; render(); return; }
+  const l = e.target.closest('[data-lower]');
+  if(l){ state.lower = l.dataset.lower; store.set('lower', state.lower); render(); return; }
   const w = e.target.closest('[data-i]');
-  if(w){ state.dayIndex = +w.dataset.i; state.shuffle=0; render(); window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
+  if(w){ const i=+w.dataset.i; state.view = i===0?{type:'today'}: i===1?{type:'tomorrow'}:{type:'day', i}; state.shuffle=0; render();
+    window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }
 });
 
 const SENS = [[-3,'寒がり'],[-1.5,'やや\n寒がり'],[0,'ふつう'],[1.5,'やや\n暑がり'],[3,'暑がり']];
@@ -829,7 +913,7 @@ $('#gpsBtn').onclick = () => {
   );
 };
 function setPlace(p){
-  state.place = p; store.set('place', p); state.dayIndex=0; state.shuffle=0;
+  state.place = p; store.set('place', p); state.view={type:'today'}; state.shuffle=0;
   $('#results').innerHTML=''; $('#q').value=''; closeSheet(); load();
 }
 
