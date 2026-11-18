@@ -190,7 +190,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
   <div id="main"><div class="skeleton">天気を読み込んでいます</div></div>
 
   <footer class="foot">
-    天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）
+    天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）。気温・天気は気象庁の数値予報モデル（MSM・GSM）、降水確率はOpen-Meteoの既定モデルによる値です。
   </footer>
 </div>
 
@@ -682,19 +682,41 @@ function renderLay(res, seed){
 }
 
 /* ---------- data ---------- */
-async function fetchWeather(lat, lon){
-  const u = new URL('https://api.open-meteo.com/v1/forecast');
-  u.search = new URLSearchParams({
-    latitude:lat, longitude:lon, timezone:'Asia/Tokyo', forecast_days:'7', past_days:'1', wind_speed_unit:'ms',
-    daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
-    hourly:'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m'
-  });
+async function getJSON(u){
   const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
   try{
     const res = await fetch(u, {cache:'no-store', signal:ctl.signal});
     if(!res.ok) throw new Error('HTTP '+res.status);
     return await res.json();
   } finally { clearTimeout(tm); }
+}
+// 気温・天気・湿度・風は気象庁モデル（MSM→GSM）を優先し、
+// 気象庁モデルにない降水確率と欠けた値は既定モデル（best_match）で補う
+async function fetchWeather(lat, lon){
+  const mk = extra => { const u = new URL('https://api.open-meteo.com/v1/forecast'); u.search = new URLSearchParams({
+    latitude:lat, longitude:lon, timezone:'Asia/Tokyo', forecast_days:'7', past_days:'1', wind_speed_unit:'ms',
+    daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
+    hourly:'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m',
+    ...extra }); return u; };
+  const [base, jma] = await Promise.allSettled([getJSON(mk({})), getJSON(mk({models:'jma_seamless'}))]);
+  if(base.status !== 'fulfilled'){
+    if(jma.status === 'fulfilled') return jma.value;
+    throw base.reason;
+  }
+  const raw = base.value;
+  if(jma.status === 'fulfilled') mergeInto(raw, jma.value);
+  return raw;
+}
+function mergeInto(dst, src){
+  for(const sec of ['daily','hourly']){
+    const S = src[sec], D = dst[sec];
+    if(!S || !D || !S.time || S.time.length !== D.time.length || S.time[0] !== D.time[0]) continue;
+    for(const k in S){
+      if(k === 'time' || k.includes('probability') || !Array.isArray(D[k]) || !Array.isArray(S[k])) continue;
+      D[k] = D[k].map((v,i) => S[k][i] != null ? S[k][i] : v);
+    }
+  }
+  dst.jma = true;
 }
 const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 function normalize(j){
@@ -711,6 +733,16 @@ function normalize(j){
       pop:d.precipitation_probability_max[i]??0, psum:d.precipitation_sum[i]??0, wind:d.wind_speed_10m_max[i]??0,
       hum: Math.round(avg(hs.map(x=>x.hum).filter(v=>v!=null))), snow: k.k==='snow', night:false };
   });
+  // 天気予報の慣例に合わせる：最低気温は0〜9時、最高気温は9〜18時
+  for(const day of all){
+    const hs = hours.filter(x=>x.date===day.date && x.temp!=null);
+    const morn = hs.filter(x=>x.hh<=9), noon = hs.filter(x=>x.hh>=9 && x.hh<=18);
+    if(morn.length>=9 && noon.length>=9){
+      day.min = Math.min(...morn.map(x=>x.temp)); day.max = Math.max(...noon.map(x=>x.temp));
+      const ma = morn.map(x=>x.app).filter(v=>v!=null), na = noon.map(x=>x.app).filter(v=>v!=null);
+      if(ma.length && na.length){ day.appMin = Math.min(...ma); day.appMax = Math.max(...na); }
+    }
+  }
   for(let i=1;i<all.length;i++){ all[i].dMax = all[i].max-all[i-1].max; all[i].dMin = all[i].min-all[i-1].min; }
   const n = new Date(); const today = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
   let ti = all.findIndex(x=>x.date===today); if(ti<1) ti = 1;
