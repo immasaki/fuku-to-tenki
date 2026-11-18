@@ -683,8 +683,8 @@ function renderLay(res, seed){
 }
 
 /* ---------- data ---------- */
-async function getJSON(u){
-  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
+async function getJSON(u, ms=15000){
+  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), ms);
   try{
     const res = await fetch(u, {cache:'no-store', signal:ctl.signal});
     if(!res.ok){ let why=''; try{ why=(await res.json()).reason||''; }catch(_){} throw new Error(`HTTP ${res.status} ${why}`.trim()); }
@@ -699,13 +699,13 @@ async function fetchWeather(lat, lon){
     daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
     hourly:'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m',
     ...extra }); return u; };
-  const [base, jma] = await Promise.allSettled([getJSON(mk({})), getJSON(mk({models:'jma_seamless'}))]);
-  if(base.status !== 'fulfilled'){
-    if(jma.status === 'fulfilled') return jma.value;
-    throw base.reason;
-  }
-  const raw = base.value;
-  if(jma.status === 'fulfilled') mergeInto(raw, jma.value);
+  const jmaP = getJSON(mk({models:'jma_seamless'})).catch(()=>null);
+  let raw;
+  try{ raw = await getJSON(mk({})); }
+  catch(e){ const j = await jmaP; if(j) return j; throw e; }
+  // 気象庁モデルの応答は最大3秒だけ待つ（遅いときは既定モデルだけで表示）
+  const jma = await Promise.race([jmaP, new Promise(r=>setTimeout(()=>r(null), 3000))]);
+  if(jma) mergeInto(raw, jma);
   return raw;
 }
 function mergeInto(dst, src){
@@ -968,11 +968,13 @@ async function load(){
     try{ state.data = normalize(cached.raw); state.data.fetchedAt = new Date(cached.at); state.demo = false; render(); }catch(e){}
   }
   try{
-    const raw = await fetchWeather(state.place.lat, state.place.lon);
+    let raw;
+    try{ raw = await fetchWeather(state.place.lat, state.place.lon); }
+    catch(first){ await new Promise(r=>setTimeout(r, 1000)); raw = await fetchWeather(state.place.lat, state.place.lon); }
     store.set('wx', {key, raw, at:Date.now()});
     state.data = normalize(raw); state.demo = false;
   }catch(e){
-    state.err = e && e.name==='AbortError' ? '通信がタイムアウトしました（8秒）' : (e && e.message) || String(e);
+    state.err = e && e.name==='AbortError' ? '通信がタイムアウトしました（15秒×2回）' : (e && e.message) || String(e);
     if(!state.data){ state.data = demoData(); state.demo = true; }
   }
   render();
