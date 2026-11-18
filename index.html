@@ -40,8 +40,8 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .app{max-width:460px;margin:0 auto;padding:0 14px calc(env(safe-area-inset-bottom) + 40px)}
 
 /* header + period tabs (sticky) */
-.head{position:sticky;top:0;z-index:5;background:var(--ground);padding:calc(env(safe-area-inset-top) + 10px) 0 10px;margin:0 -14px;padding-left:14px;padding-right:14px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.head{position:sticky;top:0;z-index:5;background:var(--ground);padding:calc(env(safe-area-inset-top) + 8px) 0 8px;margin:0 -14px;padding-left:14px;padding-right:14px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
 .place{display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-width:0}
 .place b{font-size:20px;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .place b::after{content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-4px) rotate(45deg)}
@@ -49,48 +49,51 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .iconbtn{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--paper)}
 .iconbtn svg{width:19px;height:19px}
 .ptabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--paper);border-radius:14px;padding:4px;gap:4px}
-.ptabs button{padding:10px 0;border-radius:10px;font-size:15px;font-weight:700;color:var(--sub);transition:background .2s,color .2s}
+.ptabs button{padding:8px 0;border-radius:10px;font-size:15px;font-weight:700;color:var(--sub);transition:background .2s,color .2s}
 .ptabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 
 /* main card */
-.card{background:var(--paper);border-radius:22px;padding:14px 14px 12px}
-.when{font-size:13px;color:var(--sub);margin:0 2px 6px}
-.cols{display:grid;grid-template-columns:1fr 1.08fr;gap:12px;align-items:start}
+.card{background:var(--paper);border-radius:20px;padding:10px 12px 10px}
+.when{font-size:12px;color:var(--sub);margin:0 2px 4px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
 .left{min-width:0}
 .wxhead{display:flex;align-items:center;gap:8px}
-.wxhead svg{width:54px;height:54px;flex:none}
-.wxhead .label{font-size:16px;font-weight:700;line-height:1.35}
-.temps{display:grid;grid-template-columns:1fr 1fr;margin:8px 0 10px}
-.temps div{display:flex;flex-direction:column}
-.temps b{font-family:var(--num);font-stretch:70%;font-weight:400;font-size:40px;line-height:1;letter-spacing:-.01em}
+.wxhead svg{width:42px;height:42px;flex:none}
+.wxhead .label{font-size:15px;font-weight:700;line-height:1.3}
+.temps{display:grid;grid-template-columns:1fr 1fr;margin:4px 0 8px}
+.temps div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 3px}
+.temps b{font-family:var(--num);font-stretch:70%;font-weight:400;font-size:34px;line-height:1;letter-spacing:-.01em}
 .temps .lo b{color:var(--sub);font-weight:300}
-.temps small{font-family:var(--num);font-stretch:85%;font-size:13px;margin-top:3px;color:var(--sub)}
+.temps small{font-family:var(--num);font-stretch:85%;font-size:12px;color:var(--sub)}
 .temps small.up{color:var(--warm)} .temps small.dn{color:var(--indigo)}
-.temps .cap{font-family:inherit;font-size:11px;color:var(--sub);margin:0 0 2px}
+.temps .cap{width:100%;font-family:inherit;font-size:11px;color:var(--sub);margin:0 0 2px}
 .stats{display:grid;grid-template-columns:1fr 1fr;margin:0;border-top:1px solid var(--line)}
-.stats div{padding:7px 2px 6px;border-bottom:1px solid var(--line)}
+.stats div{padding:4px 2px 3px;border-bottom:1px solid var(--line)}
 .stats div:nth-child(odd){border-right:1px solid var(--line);padding-right:8px}
 .stats div:nth-child(even){padding-left:10px}
 .stats dt{font-size:11px;color:var(--sub);line-height:1.2}
-.stats dd{margin:0;font-family:var(--num);font-stretch:80%;font-size:19px;font-weight:500;line-height:1.25}
+.stats dd{margin:0;font-family:var(--num);font-stretch:80%;font-size:17px;font-weight:500;line-height:1.2}
 .stats dd small{font-size:12px;font-weight:400;margin-left:1px}
 .stats .pop dd{color:var(--indigo)}
 
-.lay{border-radius:16px;overflow:hidden;background:var(--linen)}
-.lay svg{display:block;width:100%;height:auto}
+.lay{position:relative;display:block;width:100%;border-radius:14px;overflow:hidden;background:var(--linen)}
+.lay svg{display:block;width:100%;height:100%}
+.lay .more{position:absolute;right:6px;bottom:6px;background:rgba(245,246,242,.92);border-radius:999px;padding:2px 9px 2px 10px;font-size:11px;color:var(--ink);display:flex;align-items:center;gap:3px}
+.lay .more::after{content:"";width:5px;height:5px;border-right:1.5px solid var(--ink);border-top:1.5px solid var(--ink);transform:rotate(45deg)}
 
-.comment{margin:12px 0 0;background:var(--ground);border-radius:14px;padding:10px 12px;font-size:14px;line-height:1.65}
+.comment{margin:8px 0 0;background:var(--ground);border-radius:12px;padding:7px 10px;font-size:13px;line-height:1.55}
 .comment p{margin:0}
-.comment p+p{margin-top:4px;color:var(--sub);font-size:13px}
-.tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.comment p+p{margin-top:2px;color:var(--sub);font-size:12px}
+.comment .umb{color:var(--indigo)}
+.tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--ground);border-radius:999px;padding:3px}
-.seg button{padding:6px 12px;border-radius:999px;font-size:12px;font-weight:500;color:var(--sub);white-space:nowrap}
+.seg button{padding:5px 12px;border-radius:999px;font-size:12px;font-weight:500;color:var(--sub);white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .shuffle{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--indigo);padding:6px 0;white-space:nowrap}
 .shuffle svg{width:15px;height:15px}
 
 /* items */
-.items{list-style:none;margin:14px 0 0;padding:0 4px}
+.items{list-style:none;margin:6px 0 0;padding:0}
 .items li{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
 .items li:first-child{border-top:1px solid var(--line)}
 .items .cat{font-size:12px;color:var(--sub)}
@@ -106,10 +109,14 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .rain p+p{margin-top:3px}
 
 /* lower tabs */
-.ltabs{display:grid;grid-template-columns:1fr 1fr;margin-top:24px;border-bottom:1px solid var(--line)}
-.ltabs button{padding:10px 0;font-size:15px;font-weight:700;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px}
+.ltabs{display:grid;grid-template-columns:1fr 1fr;margin-top:10px;border-bottom:1px solid var(--line)}
+.ltabs button{padding:8px 0;font-size:15px;font-weight:700;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px}
 .ltabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
-.panel{padding-top:12px}
+.panel{padding-top:8px}
+.sheet .lay{max-width:220px;margin:4px auto 0}
+.sheet .rain{margin-top:12px}
+.sheet .rain h3{margin:0}
+.sheet .sub{font-size:13px;color:var(--sub);margin:0}
 .hours{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;margin:0 -14px;padding-left:14px;padding-right:14px}
 .hours::-webkit-scrollbar{display:none}
 .hr{flex:none;width:56px;background:var(--paper);border-radius:14px;padding:7px 0 8px;text-align:center}
@@ -194,6 +201,15 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
   </footer>
 </div>
 
+<div id="itemWrap">
+  <div class="scrim" id="itemScrim"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="itemTitle">
+    <div class="grip"></div>
+    <h2 id="itemTitle">コーデの詳細</h2>
+    <div id="itemBody"></div>
+    <div style="margin-top:18px"><button class="btn" id="itemClose" type="button" style="width:100%">閉じる</button></div>
+  </div>
+</div>
 <div id="sheetWrap">
   <div class="scrim" id="scrim"></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
@@ -857,6 +873,13 @@ function render(){
       </button></li>`; }).join('')}</ul>`;
   }
 
+  const layHtml = renderLay(res, hashStr(p.key+state.style+state.shuffle));
+  const umbItem = o.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
+  $('#itemBody').innerHTML = `
+    <p class="sub">${when}　${state.style==='kirei'?'きれいめリラックス':'カジュアル'}</p>
+    <div class="lay">${layHtml}</div>
+    <ul class="items">${rows.join('')}</ul>
+    ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}`;
   $('#main').innerHTML = `
     <div class="card">
       <div class="when">${when}</div>
@@ -871,9 +894,9 @@ function render(){
             <div><dt>風速</dt><dd>${Math.round(p.wind)}<small>m/s</small></dd></div>
           </dl>
         </div>
-        <div class="lay">${renderLay(res, hashStr(p.key+state.style+state.shuffle))}</div>
+        <button class="lay" id="layBtn" aria-label="アイテムと色の詳細を見る">${layHtml}<span class="more">詳細</span></button>
       </div>
-      <div class="comment"><p>${LEVEL_TEXT[res.lv]}</p>${res.notes.map(n=>`<p>${n}</p>`).join('')}</div>
+      <div class="comment"><p>${LEVEL_TEXT[res.lv]}</p>${res.notes.map(n=>`<p>${n}</p>`).join('')}${umbItem?`<p class="umb">${umbItem.name}を持って出かけましょう（降水確率${p.pop}%）</p>`:''}</div>
       <div class="tools">
         <div class="seg" role="group" aria-label="スタイル">
           <button data-style="kirei" aria-pressed="${state.style==='kirei'}">きれいめ</button>
@@ -882,16 +905,14 @@ function render(){
         <button class="shuffle" id="shuffleBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg>別のコーデ</button>
       </div>
     </div>
-    <ul class="items">${rows.join('')}</ul>
-    ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}
-    ${state.demo ? (IS_PREVIEW
-      ? `<p class="notice">claude.aiのプレビューでは天気を取得できないため、サンプルの天気で表示しています。実際の予報は <a href="https://immasaki.github.io/fuku-to-tenki/" target="_blank" rel="noopener">immasaki.github.io/fuku-to-tenki</a> で見られます。</p>`
-      : `<div class="notice"><p style="margin:0">天気を取得できなかったため、サンプルの天気で表示しています。</p><p style="margin:4px 0 8px;font-size:12px">理由：${state.err||'不明'}</p><button class="btn ghost" id="retryBtn" type="button">もう一度読み込む</button></div>`) : ''}
     <div class="ltabs" role="tablist">
       <button role="tab" data-lower="hours" aria-selected="${state.lower==='hours'}">1時間ごと</button>
       <button role="tab" data-lower="week" aria-selected="${state.lower==='week'}">週間コーデ</button>
     </div>
     <div class="panel" role="tabpanel">${panel}</div>
+    ${state.demo ? (IS_PREVIEW
+      ? `<p class="notice">claude.aiのプレビューでは天気を取得できないため、サンプルの天気で表示しています。実際の予報は <a href="https://immasaki.github.io/fuku-to-tenki/" target="_blank" rel="noopener">immasaki.github.io/fuku-to-tenki</a> で見られます。</p>`
+      : `<div class="notice"><p style="margin:0">天気を取得できなかったため、サンプルの天気で表示しています。</p><p style="margin:4px 0 8px;font-size:12px">理由：${state.err||'不明'}</p><button class="btn ghost" id="retryBtn" type="button">もう一度読み込む</button></div>`) : ''}
   `;
 }
 
@@ -904,6 +925,7 @@ $('#main').addEventListener('click', e => {
   const s = e.target.closest('[data-style]');
   if(s){ state.style = s.dataset.style; state.shuffle=0; store.set('style', state.style); render(); return; }
   if(e.target.closest('#shuffleBtn')){ state.shuffle++; render(); return; }
+  if(e.target.closest('#layBtn')){ itemWrap.classList.add('open'); return; }
   if(e.target.closest('#retryBtn')){ e.target.textContent='読み込んでいます…'; load(); return; }
   const l = e.target.closest('[data-lower]');
   if(l){ state.lower = l.dataset.lower; store.set('lower', state.lower); render(); return; }
@@ -925,7 +947,10 @@ const openSheet = () => { wrap.classList.add('open'); renderSens(); $('#msg').te
 const closeSheet = () => wrap.classList.remove('open');
 $('#setBtn').onclick = openSheet; $('#placeBtn').onclick = openSheet;
 $('#scrim').onclick = closeSheet; $('#closeBtn').onclick = closeSheet;
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSheet(); });
+const itemWrap = $('#itemWrap');
+const closeItems = () => itemWrap.classList.remove('open');
+$('#itemScrim').onclick = closeItems; $('#itemClose').onclick = closeItems;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeSheet(); closeItems(); } });
 
 $('#searchForm').addEventListener('submit', async e=>{
   e.preventDefault();
