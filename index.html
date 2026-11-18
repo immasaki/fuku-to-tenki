@@ -13,7 +13,7 @@
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEL0lEQVR4Xu3czW3cSBAGUGqhKDYf3zYMx2BgI1hgY1AYvjkawYDiWGAFCIMZ/nR1F8nu4Xs3H4ZqV33zkRBG8/L7432COX8YC0uEA+EgTnOgOYjTHGgO4jQHi17NZiwfv/5+PPCf3/7Z43/x4jekQ5jNxN4pEY7eFcbiVlaReOboWkUypqnyVY+Eo191yfjU8tovwtGp9u22X0E4etS+15T+EI7uZCWjPR/CwSLh6EtubTSWh3CgOYjTHB3Z457ScmcRDtxWiNMcaA7iNAeagzjN0ZGsD+k8qruycOC2Qpzm6Etd/6+rvqZw4LYyjuo3+qyWq2mOHrVs9FbjdYSjU417naaEKwhHv1ry0fLaL2OH46/v//a72/81nrBux3WvejTqn0PeDf3n24/eUpJ7wsLPAWXF4tNg4Vh/I3YSkV0P6a/sZ6xP/Mvp+RjlnCV6b47CWd85JSIDHbVQv+Gom/WtwyIy0FFDegxH+6wPi8hAR63QUThyB733jWas09bpIhy7DnqPZ9XhDlznzHAcM+LcChnxzNXOCccpI258EBnxzI2ODsfpI66IyIhnTnFQOLqab/mNZtBjZ9k9HD3Pd/1ZddyTZ9krHENMdqlChj58ovxwjDjZp5H7S+Hkz3NIxrly558cDp5JZjhyY0udxC2khSPxTDTK2kVaOHg+OeHIiipZUjaSEw6eUkI4UkJKuva9tIaj/QTsp3E7reHgiTWFozGYHKBlR/XhaPmpHKl6U/Xh4OlVhqM6jJyibl814aj7SZyrYms14eAiwuGoCCCdiO4uHA6uIxaOaPToTWiDgXCErku3yvcYCAdXUxqO8rjRv8JtFoWj8FoMpGSnReHgmrbDURIxRrS52Y1wbL6eoa3vd7s5uKy1cKiNK1jZsuZg0WI41MZ1LO16PhyScTWzG3dbIXJbURvX9Lj3xW/2EZFLmf1KoO2vfZKSJ7b+NVHbzxw/337kftNU7tWuI3duJWt9LRzu58m0yBMoD9l2c9wqidu68pPxqHF60fWVNsddRD7/qUiGUB2pWHPciSax+pR8Cc0wuqA7Nc3xGBEt0ptQhpY0NUfocSTluEzTxiQb2+JWQnN4HOnBHu+9tOZYfxzZ4+hXdjvPxKrIf+ZY4bcju9r7LbdXc8zea0i0dzKm6ZBwMKgjmoNBCQeLhAPhIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeagzjNgeYgTnOgOYjTHGgO4jQHmoM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc7Do5ffHu/EwS3PgmYM4zYHmIE5zoDmI0xxoDuI0B5qDOM2B5iBOc6A5iNMcaA7iNAeag7j/AJ5xVfeNFFTTAAAAAElFTkSuQmCC">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 :root{
   --ground:#E3E6E1;
@@ -689,9 +689,12 @@ async function fetchWeather(lat, lon){
     daily:'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max',
     hourly:'temperature_2m,apparent_temperature,relative_humidity_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m'
   });
-  const res = await fetch(u, {cache:'no-store'});
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  return normalize(await res.json());
+  const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
+  try{
+    const res = await fetch(u, {cache:'no-store', signal:ctl.signal});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  } finally { clearTimeout(tm); }
 }
 const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
 function normalize(j){
@@ -709,7 +712,9 @@ function normalize(j){
       hum: Math.round(avg(hs.map(x=>x.hum).filter(v=>v!=null))), snow: k.k==='snow', night:false };
   });
   for(let i=1;i<all.length;i++){ all[i].dMax = all[i].max-all[i-1].max; all[i].dMin = all[i].min-all[i-1].min; }
-  return {days: all.slice(1), hours, fetchedAt: new Date()};
+  const n = new Date(); const today = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+  let ti = all.findIndex(x=>x.date===today); if(ti<1) ti = 1;
+  return {days: all.slice(ti), hours, fetchedAt: new Date()};
 }
 function tonightOf(data){
   const d0 = data.days[0];
@@ -914,16 +919,24 @@ $('#gpsBtn').onclick = () => {
 };
 function setPlace(p){
   state.place = p; store.set('place', p); state.view={type:'today'}; state.shuffle=0;
+  state.data = null; $('#main').innerHTML = '<div class="skeleton">天気を読み込んでいます</div>';
   $('#results').innerHTML=''; $('#q').value=''; closeSheet(); load();
 }
 
 async function load(){
   $('#placeName').textContent = state.place.name;
+  const key = `${state.place.lat},${state.place.lon}`;
+  // show the last forecast right away, then refresh in the background
+  const cached = store.get('wx', null);
+  if(!state.data && cached && cached.key===key && Date.now()-cached.at < 36*3600*1000){
+    try{ state.data = normalize(cached.raw); state.data.fetchedAt = new Date(cached.at); state.demo = false; render(); }catch(e){}
+  }
   try{
-    state.data = await fetchWeather(state.place.lat, state.place.lon);
-    state.demo = false;
+    const raw = await fetchWeather(state.place.lat, state.place.lon);
+    store.set('wx', {key, raw, at:Date.now()});
+    state.data = normalize(raw); state.demo = false;
   }catch(e){
-    state.data = demoData(); state.demo = true;
+    if(!state.data){ state.data = demoData(); state.demo = true; }
   }
   render();
 }
@@ -934,6 +947,10 @@ document.addEventListener('visibilitychange', ()=>{
   if(document.hidden) hiddenAt = Date.now();
   else if(hiddenAt && Date.now()-hiddenAt > 30*60*1000) load();
 });
+// keep the app shell on the phone so it opens without waiting for the network
+if('serviceWorker' in navigator && location.protocol==='https:' && location.hostname.endsWith('github.io')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
 })();
 </script>
 </body>
