@@ -221,6 +221,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 
 <script>
 (() => {
+const IS_PREVIEW = !/github\.io$/.test(location.hostname) && location.protocol !== 'file:';
 /* ---------- storage ---------- */
 const store = {
   get(k, d){ try{ const v = localStorage.getItem('mt.'+k); return v==null ? d : JSON.parse(v); }catch(e){ return d; } },
@@ -686,7 +687,7 @@ async function getJSON(u){
   const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 8000);
   try{
     const res = await fetch(u, {cache:'no-store', signal:ctl.signal});
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    if(!res.ok){ let why=''; try{ why=(await res.json()).reason||''; }catch(_){} throw new Error(`HTTP ${res.status} ${why}`.trim()); }
     return await res.json();
   } finally { clearTimeout(tm); }
 }
@@ -883,7 +884,9 @@ function render(){
     </div>
     <ul class="items">${rows.join('')}</ul>
     ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}
-    ${state.demo ? `<p class="notice">天気を取得できなかったため、サンプルの天気で表示しています。ネットにつながる環境で開くと実際の予報に切り替わります。</p>`:''}
+    ${state.demo ? (IS_PREVIEW
+      ? `<p class="notice">claude.aiのプレビューでは天気を取得できないため、サンプルの天気で表示しています。実際の予報は <a href="https://immasaki.github.io/fuku-to-tenki/" target="_blank" rel="noopener">immasaki.github.io/fuku-to-tenki</a> で見られます。</p>`
+      : `<div class="notice"><p style="margin:0">天気を取得できなかったため、サンプルの天気で表示しています。</p><p style="margin:4px 0 8px;font-size:12px">理由：${state.err||'不明'}</p><button class="btn ghost" id="retryBtn" type="button">もう一度読み込む</button></div>`) : ''}
     <div class="ltabs" role="tablist">
       <button role="tab" data-lower="hours" aria-selected="${state.lower==='hours'}">1時間ごと</button>
       <button role="tab" data-lower="week" aria-selected="${state.lower==='week'}">週間コーデ</button>
@@ -901,6 +904,7 @@ $('#main').addEventListener('click', e => {
   const s = e.target.closest('[data-style]');
   if(s){ state.style = s.dataset.style; state.shuffle=0; store.set('style', state.style); render(); return; }
   if(e.target.closest('#shuffleBtn')){ state.shuffle++; render(); return; }
+  if(e.target.closest('#retryBtn')){ e.target.textContent='読み込んでいます…'; load(); return; }
   const l = e.target.closest('[data-lower]');
   if(l){ state.lower = l.dataset.lower; store.set('lower', state.lower); render(); return; }
   const w = e.target.closest('[data-i]');
@@ -968,6 +972,7 @@ async function load(){
     store.set('wx', {key, raw, at:Date.now()});
     state.data = normalize(raw); state.demo = false;
   }catch(e){
+    state.err = e && e.name==='AbortError' ? '通信がタイムアウトしました（8秒）' : (e && e.message) || String(e);
     if(!state.data){ state.data = demoData(); state.demo = true; }
   }
   render();
