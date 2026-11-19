@@ -198,7 +198,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
   <div id="main"><div class="skeleton">天気を読み込んでいます</div></div>
 
   <footer class="foot">
-    天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）。気温・天気は気象庁の数値予報モデル（MSM・GSM）、降水確率はOpen-Meteoの既定モデルによる値です。
+    天気データ：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo.com</a>（CC BY 4.0）。気温・天気は気象庁の数値予報モデル（MSM・GSM）による値です。降水確率は<a href="https://www.jma.go.jp/bosai/forecast/" target="_blank" rel="noopener">気象庁の天気予報</a>（取得できないときはOpen-Meteoの値を10%刻みに丸めた目安）です。
   </footer>
 </div>
 
@@ -227,6 +227,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
       <button class="btn ghost" id="gpsBtn" type="button">現在地を使う</button>
     </div>
     <p class="msg" id="msg"></p>
+    <p class="hint" id="areaHint"></p>
 
     <h3>体感の好み</h3>
     <div class="sens" id="sens"></div>
@@ -605,8 +606,9 @@ function buildOutfit(day, style, sens, seed){
   const snow = day.snow;
   // 気象庁モデルの降水量・天気を主に、降水確率（アンサンブル由来）は補助に使う
   const jmaWet = day.psum>=0.5 || day.kind==='rain' || day.kind==='storm' || snow;
-  const rainy = jmaWet || day.pop>=70;
-  const heavy = day.psum>=5 || (jmaWet && day.pop>=80);
+  const official = day.popSrc==='jma';
+  const rainy = official ? (day.pop>=50 || day.psum>=1) : (jmaWet || day.pop>=70);
+  const heavy = day.psum>=5 || (official ? day.pop>=80 : (jmaWet && day.pop>=80));
   const used = new Set();
   const choose = (list) => {
     if(!list || !list.length) return null;
@@ -633,8 +635,13 @@ function buildOutfit(day, style, sens, seed){
   o.extras = [];
   // umbrella
   let umb = null;
-  if(day.psum>=3 || snow || (jmaWet && day.pop>=60)) umb = 'long';
-  else if(jmaWet || day.pop>=50) umb = 'fold';
+  if(official){
+    if(day.pop>=60 || day.psum>=3 || snow) umb = 'long';
+    else if(day.pop>=30 || day.psum>=0.5) umb = 'fold';
+  } else {
+    if(day.psum>=3 || snow || (jmaWet && day.pop>=60)) umb = 'long';
+    else if(jmaWet || day.pop>=50) umb = 'fold';
+  }
   if(umb){
     const cn = pick(r, UMB_COL);
     o.extras.push({name: umb==='long'?'長傘':'折りたたみ傘', shape: umb==='long'?'umbrella':'fold', colorName:cn, color:COL[cn]});
@@ -812,6 +819,72 @@ function demoData(){
   return normalize({daily, hourly});
 }
 
+
+/* ---------- 気象庁の公式予報（降水確率） ---------- */
+const JMA = 'https://www.jma.go.jp/bosai';
+const NAGOYA_AREA = {office:'230000', class10:'230010', name:'愛知県 西部'};
+// 緯度経度 → 市区町村（国土地理院）→ 気象庁の予報区（一次細分区域）
+async function resolveJmaArea(lat, lon, admin){
+  const area = await getJSON(`${JMA}/common/const/area.json`, 15000);
+  const fromClass20 = c20 => {
+    const c15 = area.class15s[c20.parent]; if(!c15) return null;
+    const c10 = area.class10s[c15.parent]; if(!c10) return null;
+    const off = area.offices[c10.parent]; if(!off) return null;
+    return {office:c10.parent, class10:c15.parent, name:`${off.name} ${c10.name}`};
+  };
+  try{
+    const g = await getJSON(`https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress?lat=${lat}&lon=${lon}`, 8000);
+    const muni = String(g && g.results && g.results.muniCd || '').padStart(5,'0');
+    if(muni !== '00000'){
+      // 政令市の区は市の単位でも探す（例：名古屋市中区 23106 → 名古屋市 23100）
+      for(const code of [muni+'00', muni.slice(0,3)+'0000']){
+        if(area.class20s[code]){ const r = fromClass20(area.class20s[code]); if(r) return r; }
+      }
+    }
+  }catch(e){}
+  // 都道府県名だけ分かるときは、その府県の最初の地域
+  if(admin){
+    const k = Object.keys(area.offices).find(c => area.offices[c].name.startsWith(admin.replace(/[都府県]$/,'')));
+    if(k){ const c10 = area.offices[k].children[0]; return {office:k, class10:c10, name:`${area.offices[k].name} ${area.class10s[c10].name}`}; }
+  }
+  throw new Error('予報区を特定できませんでした');
+}
+async function fetchOfficial(a){
+  const path = a.office==='014030' ? '014100' : a.office==='460040' ? '460100' : a.office;
+  const j = await getJSON(`${JMA}/forecast/data/forecast/${path}.json`, 10000);
+  const short = j[0];
+  const ts = short.timeSeries.find(t => t.areas.some(x => x.pops));
+  const ar = ts.areas.find(x => x.area.code===a.class10) || ts.areas[0];
+  const blocks = ts.timeDefines.map((t,i) => ({start:t, pop: ar.pops[i]==='' || ar.pops[i]==null ? null : +ar.pops[i]}));
+  const week = {};
+  const wt = j[1] && j[1].timeSeries.find(t => t.areas.some(x => x.pops));
+  if(wt){
+    const wa = wt.areas.find(x => x.area.code===a.class10) || wt.areas.find(x => x.area.code===a.office) || wt.areas[0];
+    wt.timeDefines.forEach((t,i) => { const v = wa.pops[i]; if(v!=='' && v!=null) week[t.slice(0,10)] = +v; });
+  }
+  return {area:a.name, areaName:ar.area.name, blocks, week, report:short.reportDatetime};
+}
+// date の fromH〜toH 時にかかる6時間区分の最大値。なければ週間予報の日の値
+function officialPop(date, fromH, toH){
+  const off = state.off; if(!off) return null;
+  const [y,m,d] = date.split('-').map(Number);
+  const ws = new Date(y,m-1,d,fromH).getTime(), we = new Date(y,m-1,d,toH).getTime();
+  const bs = off.blocks.filter(b => { const t = new Date(b.start).getTime(); return b.pop!=null && t < we && t + 6*3600e3 > ws; });
+  if(bs.length) return Math.max(...bs.map(b => b.pop));
+  return off.week[date] ?? null;
+}
+function officialPopAt(date, hh){
+  const off = state.off; if(!off) return null;
+  const [y,m,d] = date.split('-').map(Number); const t = new Date(y,m-1,d,hh).getTime();
+  const b = off.blocks.find(b => { const s = new Date(b.start).getTime(); return b.pop!=null && s <= t && t < s + 6*3600e3; });
+  return b ? b.pop : null;
+}
+const round10 = v => Math.round((v||0)/10)*10;
+// 期間に公式の降水確率を当てる（取れないときはOpen-Meteoの値を10%刻みに）
+function withOfficial(p, fromH, toH){
+  const op = officialPop(p.date, fromH, toH);
+  return op!=null ? {...p, pop:op, popSrc:'jma'} : {...p, pop:round10(p.pop), popSrc:'model'};
+}
 /* ---------- render ---------- */
 const CAT = {outer:'アウター', top:'トップス', inner:'インナー', bottom:'ボトムス', shoes:'シューズ'};
 function fmtDay(ds){ const d=parseDate(ds); return `${d.getMonth()+1}月${d.getDate()}日（${WD[d.getDay()]}）`; }
@@ -824,13 +897,15 @@ function shortFit(o){
 const signed = v => v==null ? '' : (Math.round(v)>0 ? '+' : Math.round(v)<0 ? '−' : '±') + Math.abs(Math.round(v));
 function periodFor(){
   const v = state.view, data = state.data;
-  if(v.type==='tonight') return tonightOf(data);
-  if(v.type==='tomorrow') return data.days[1];
-  if(v.type==='day') return data.days[v.i];
+  if(v.type==='tonight') return withOfficial(tonightOf(data), 18, 24);
+  if(v.type==='tomorrow') return withOfficial(data.days[1], 6, 24);
+  if(v.type==='day') return withOfficial(data.days[v.i], 6, 24);
   const d0 = data.days[0];
   const hs = data.hours.filter(x=>x.date===d0.date);
-  return {...d0, ...rainWindow(hs, Math.max(6, new Date().getHours()), d0.pop, d0.psum)};
+  const from = Math.max(6, new Date().getHours());
+  return withOfficial({...d0, ...rainWindow(hs, from, d0.pop, d0.psum)}, from, 24);
 }
+function periodForToday(){ const v = state.view; state.view = {type:'today'}; const p = periodFor(); state.view = v; return p; }
 function hoursFor(p){
   const H = state.data.hours;
   if(state.view.type==='today'){
@@ -871,17 +946,18 @@ function render(){
   let panel = '';
   if(state.lower==='hours'){
     const hrs = hoursFor(p);
-    panel = `<div class="hours">${hrs.map((h,ix)=>`<div class="hr${state.view.type==='today'&&ix===0?' now':''}"><div class="t">${state.view.type==='today'&&ix===0?'今':h.hh+'時'}</div>${wxIcon(wxInfo(h.code).k, h.hh>=18||h.hh<6)}<div class="d">${Math.round(h.temp)}°</div><div class="p">${h.pop>=20?h.pop+'%':''}</div></div>`).join('')}</div>`;
+    panel = `<div class="hours">${hrs.map((h,ix)=>`<div class="hr${state.view.type==='today'&&ix===0?' now':''}"><div class="t">${state.view.type==='today'&&ix===0?'今':h.hh+'時'}</div>${wxIcon(wxInfo(h.code).k, h.hh>=18||h.hh<6)}<div class="d">${Math.round(h.temp)}°</div><div class="p">${(()=>{ const v = officialPopAt(h.date, h.hh) ?? round10(h.pop); return v>=20 ? v+'%' : ''; })()}</div></div>`).join('')}</div>`;
   } else {
     const cur = state.view.type==='today'||state.view.type==='tonight' ? 0 : state.view.type==='tomorrow' ? 1 : state.view.i;
     panel = `<ul class="week">${data.days.map((d,i)=>{
-      const rr = buildOutfit(d, state.style, state.sens, 0);
+      const dd = i===0 ? periodForToday() : withOfficial(d, 6, 24);
+      const rr = buildOutfit(dd, state.style, state.sens, 0);
       const dt = parseDate(d.date); const wd = dt.getDay();
       const umb = rr.outfit.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
       return `<li><button data-i="${i}" aria-current="${i===cur}">
         <span class="day ${wd===6?'sat':wd===0?'sun':''}">${i===0?'きょう':i===1?'あした':WD[wd]+'曜'}<small>${dt.getMonth()+1}/${dt.getDate()}</small></span>
         ${wxIcon(d.kind)}
-        <span class="fit">${shortFit(rr.outfit)}${umb?`<small>${umb.name}・降水${d.pop}%</small>`:''}</span>
+        <span class="fit">${shortFit(rr.outfit)}${umb?`<small>${umb.name}・降水確率${dd.pop}%</small>`:''}</span>
         <span class="tt">${Math.round(d.max)}° <span>${Math.round(d.min)}°</span></span>
       </button></li>`; }).join('')}</ul>`;
   }
@@ -890,6 +966,7 @@ function render(){
   const umbItem = o.extras.find(e=>e && (e.shape==='umbrella'||e.shape==='fold'));
   $('#itemBody').innerHTML = `
     <p class="sub">${when}　${state.style==='kirei'?'きれいめリラックス':'カジュアル'}</p>
+    <p class="sub" style="font-size:12px">降水確率：${p.popSrc==='jma' ? `気象庁（${state.off.area}・${fmtReport(state.off.report)}発表）` : 'Open-Meteoのモデル値（気象庁の予報を取得できなかったため10%刻みに丸めた目安）'}</p>
     <div class="lay">${layHtml}</div>
     <ul class="items">${rows.join('')}</ul>
     ${res.rain ? `<div class="rain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12a9 9 0 0 1 18 0Z"/><path d="M12 12v7a2 2 0 0 1-4 0"/></svg><div><h3>${res.rain.title}</h3>${res.rain.lines.map(l=>`<p>${l}</p>`).join('')}</div></div>` : ''}`;
@@ -956,7 +1033,7 @@ $('#sens').addEventListener('click', e=>{
   state.sens = +b.dataset.v; store.set('sens', state.sens); renderSens(); render();
 });
 const wrap = $('#sheetWrap');
-const openSheet = () => { wrap.classList.add('open'); renderSens(); $('#msg').textContent=''; };
+const openSheet = () => { wrap.classList.add('open'); renderSens(); $('#msg').textContent=''; $('#areaHint').textContent = state.place.jma ? `降水確率は気象庁の「${state.place.jma.name}」の予報を使っています。` : ''; };
 const closeSheet = () => wrap.classList.remove('open');
 $('#setBtn').onclick = openSheet; $('#placeBtn').onclick = openSheet;
 $('#scrim').onclick = closeSheet; $('#closeBtn').onclick = closeSheet;
@@ -992,11 +1069,23 @@ $('#gpsBtn').onclick = () => {
   );
 };
 function setPlace(p){
-  state.place = p; store.set('place', p); state.view={type:'today'}; state.shuffle=0;
+  state.place = p; store.set('place', p); state.view={type:'today'}; state.shuffle=0; state.off = null;
   state.data = null; $('#main').innerHTML = '<div class="skeleton">天気を読み込んでいます</div>';
   $('#results').innerHTML=''; $('#q').value=''; closeSheet(); load();
 }
 
+async function loadOfficial(){
+  const p = state.place;
+  const cached = store.get('off', null);
+  if(!state.off && cached && cached.key===`${p.lat},${p.lon}` && Date.now()-cached.at < 12*3600*1000) state.off = cached.off;
+  if(!p.jma){
+    p.jma = (Math.abs(p.lat-35.1815)<0.01 && Math.abs(p.lon-136.9066)<0.01) ? NAGOYA_AREA : await resolveJmaArea(p.lat, p.lon, p.admin);
+    store.set('place', p);
+  }
+  state.off = await fetchOfficial(p.jma);
+  store.set('off', {key:`${p.lat},${p.lon}`, off:state.off, at:Date.now()});
+}
+function fmtReport(iso){ const d = new Date(iso); return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`; }
 async function load(){
   $('#placeName').textContent = state.place.name;
   const key = `${state.place.lat},${state.place.lon}`;
@@ -1005,12 +1094,16 @@ async function load(){
   if(!state.data && cached && cached.key===key && Date.now()-cached.at < 36*3600*1000){
     try{ state.data = normalize(cached.raw); state.data.fetchedAt = new Date(cached.at); state.demo = false; render(); }catch(e){}
   }
+  const offP = loadOfficial().catch(()=>{});
   try{
     let raw;
     try{ raw = await fetchWeather(state.place.lat, state.place.lon); }
     catch(first){ await new Promise(r=>setTimeout(r, 1000)); raw = await fetchWeather(state.place.lat, state.place.lon); }
     store.set('wx', {key, raw, at:Date.now()});
     state.data = normalize(raw); state.demo = false;
+    // 気象庁の予報は最大2秒だけ待ち、遅れて届いたら描き直す
+    await Promise.race([offP, new Promise(r=>setTimeout(r, 2000))]);
+    offP.then(()=>{ if(state.data && !state.demo) render(); });
   }catch(e){
     state.err = e && e.name==='AbortError' ? '通信がタイムアウトしました（15秒×2回）' : (e && e.message) || String(e);
     if(!state.data){ state.data = demoData(); state.demo = true; }
