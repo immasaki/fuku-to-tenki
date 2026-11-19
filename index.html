@@ -75,6 +75,7 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .stats dd{margin:0;font-family:var(--num);font-stretch:80%;font-size:17px;font-weight:500;line-height:1.2}
 .stats dd small{font-size:12px;font-weight:400;margin-left:1px}
 .stats .pop dd{color:var(--indigo)}
+.stats .rest{font-family:"Zen Kaku Gothic New",sans-serif;font-size:10px;color:var(--sub);margin-left:4px;white-space:nowrap}
 
 .lay{position:relative;display:block;width:100%;border-radius:14px;overflow:hidden;background:var(--linen)}
 .lay svg{display:block;width:100%;height:100%}
@@ -602,8 +603,10 @@ function buildOutfit(day, style, sens, seed){
   let lv = levelOf(eff);
   const cat = style==='kirei' ? KIREI : CASUAL;
   const snow = day.snow;
-  const rainy = day.pop>=50 || day.psum>=1 || day.kind==='rain' || day.kind==='storm';
-  const heavy = day.pop>=70 || day.psum>=5;
+  // 気象庁モデルの降水量・天気を主に、降水確率（アンサンブル由来）は補助に使う
+  const jmaWet = day.psum>=0.5 || day.kind==='rain' || day.kind==='storm' || snow;
+  const rainy = jmaWet || day.pop>=70;
+  const heavy = day.psum>=5 || (jmaWet && day.pop>=80);
   const used = new Set();
   const choose = (list) => {
     if(!list || !list.length) return null;
@@ -630,8 +633,8 @@ function buildOutfit(day, style, sens, seed){
   o.extras = [];
   // umbrella
   let umb = null;
-  if(day.pop>=60 || day.psum>=3 || snow) umb = 'long';
-  else if(day.pop>=30 || day.psum>=0.5) umb = 'fold';
+  if(day.psum>=3 || snow || (jmaWet && day.pop>=60)) umb = 'long';
+  else if(jmaWet || day.pop>=50) umb = 'fold';
   if(umb){
     const cn = pick(r, UMB_COL);
     o.extras.push({name: umb==='long'?'長傘':'折りたたみ傘', shape: umb==='long'?'umbrella':'fold', colorName:cn, color:COL[cn]});
@@ -644,8 +647,9 @@ function buildOutfit(day, style, sens, seed){
   let rain = null;
   if(umb || rainy || snow){
     const lines = [];
-    if(umb==='long') lines.push(`傘：降水確率${day.pop}%なので長傘を。` + (day.wind>=8 ? '風が強いので骨の丈夫なものを。' : ''));
-    else if(umb==='fold') lines.push(`傘：降水確率${day.pop}%。折りたたみ傘をかばんに。`);
+    const amt = day.psum>=0.5 ? `、予想降水量${Math.round(day.psum)}mm` : '';
+    if(umb==='long') lines.push(`傘：降水確率${day.pop}%${amt}なので長傘を。` + (day.wind>=8 ? '風が強いので骨の丈夫なものを。' : ''));
+    else if(umb==='fold') lines.push(`傘：降水確率${day.pop}%${amt}。念のため折りたたみ傘をかばんに。`);
     if(snow) lines.push(`靴：雪で滑りやすいので、溝の深いソールのブーツを。`);
     else if(rainy) lines.push(`靴：${o.shoes.name}で。スエードや革底の靴は避けると安心。`);
     if(heavy) lines.push('パンツ：裾が広いと濡れやすいので、細身かくるぶし丈を選びました。');
@@ -736,6 +740,12 @@ function mergeInto(dst, src){
   dst.jma = true;
 }
 const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
+// fromH時以降の最大降水確率と降水量の合計（1時間値がそろわないときは日の値を使う）
+function rainWindow(hs, fromH, popDay, psumDay){
+  const w = hs.filter(x=>x.hh>=fromH);
+  if(w.length < 3) return {pop:popDay, psum:psumDay};
+  return { pop: Math.max(0, ...w.map(x=>x.pop||0)), psum: +w.reduce((a,x)=>a+(x.prec||0),0).toFixed(1) };
+}
 function normalize(j){
   const d=j.daily, h=j.hourly;
   const hours = h.time.map((t,i)=>({time:t, date:t.slice(0,10), hh:+t.slice(11,13),
@@ -748,7 +758,8 @@ function normalize(j){
       max:d.temperature_2m_max[i], min:d.temperature_2m_min[i],
       appMax:d.apparent_temperature_max[i], appMin:d.apparent_temperature_min[i],
       pop:d.precipitation_probability_max[i]??0, psum:d.precipitation_sum[i]??0, wind:d.wind_speed_10m_max[i]??0,
-      hum: Math.round(avg(hs.map(x=>x.hum).filter(v=>v!=null))), snow: k.k==='snow', night:false };
+      hum: Math.round(avg(hs.map(x=>x.hum).filter(v=>v!=null))), snow: k.k==='snow', night:false,
+      ...rainWindow(hs, 6, d.precipitation_probability_max[i]??0, d.precipitation_sum[i]??0) };
   });
   // 天気予報の慣例に合わせる：最低気温は0〜9時、最高気温は9〜18時
   for(const day of all){
@@ -816,7 +827,9 @@ function periodFor(){
   if(v.type==='tonight') return tonightOf(data);
   if(v.type==='tomorrow') return data.days[1];
   if(v.type==='day') return data.days[v.i];
-  return data.days[0];
+  const d0 = data.days[0];
+  const hs = data.hours.filter(x=>x.date===d0.date);
+  return {...d0, ...rainWindow(hs, Math.max(6, new Date().getHours()), d0.pop, d0.psum)};
 }
 function hoursFor(p){
   const H = state.data.hours;
@@ -888,7 +901,7 @@ function render(){
           <div class="wxhead">${wxIcon(p.kind, p.night)}<div class="label">${p.label}</div></div>
           <div class="temps">${temps}</div>
           <dl class="stats">
-            <div class="pop"><dt>降水確率</dt><dd>${p.pop}<small>%</small></dd></div>
+            <div class="pop"><dt>降水確率</dt><dd>${p.pop}<small>%</small>${state.view.type==='today'?'<small class="rest">今後</small>':''}</dd></div>
             <div><dt>湿度</dt><dd>${isFinite(p.hum)?p.hum:'—'}<small>%</small></dd></div>
             <div><dt>体感</dt><dd>${Math.round(res.eff)}<small>°</small></dd></div>
             <div><dt>風速</dt><dd>${Math.round(p.wind)}<small>m/s</small></dd></div>
